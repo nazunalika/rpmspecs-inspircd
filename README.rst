@@ -34,8 +34,6 @@ What you should get from the above is there are specific guidelines that should 
 Do you have any repositories?
 +++++++++++++++++++++++++++++
 
-Yes, I do. I have two, actually. I have a copr and a personal repository. **Please avoid using Super Syrkit as a daily repository. It's not updated fast enough and is horribly disorganized to be used as such. Certain things built will only be in copr. My repository cannot be considered as a trusted source.**
-
 `Copr <https://copr.fedorainfracloud.org/coprs/nalika/>`_
 
 Do you take requests?
