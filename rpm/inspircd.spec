@@ -29,7 +29,6 @@ Source1:	%{name}.service
 Source2:	%{name}.init
 Source3:	%{name}.logrotate
 Source4:	%{name}.README
-#Source5:	%{name}-extras-%{extras_version}.tar.gz
 Source6:	%{name}.conf
 Source7:	%{name}.motd.centos
 Source8:	%{name}.rules
@@ -373,16 +372,6 @@ done
 popd
 
 %build
-
-# Add all plugins
-# In the future, we'll make these modules as part of an -extras package
-# around the 3.0 release.
-
-#%if %{with all_plugins}
-#for i in $(./modulemanager list | awk '/^m_/ && !/gnutls/ && !/re2/ {print $1}') 
-#	do ./modulemanager install $i
-#done
-#%endif
 
 # We're no longer supported :(
 %configure --disable-interactive \
