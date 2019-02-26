@@ -1,0 +1,13 @@
+[Unit]
+Description=InspIRCd Server
+After=network.target
+
+[Service]
+Type=simple
+User=inspircd
+ExecStart=/usr/sbin/inspircd --nofork
+ExecReload=/bin/kill -HUP $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
