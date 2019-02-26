@@ -617,7 +617,7 @@ fi
 * Mon Feb 25 2019 Louis Abel <tucklesepk@gmail.com> - 2.0.27-3
 - Automated webhook build
 - Plugin refresh
-- Removed extra tar ball, opted for git for extras
+- Removed extra tar ball, opted for git for extra plugins
 
 * Mon Dec 31 2018 Louis Abel <louis@shootthej.net> - 2.0.27-2
 - Added default configs, kept die line to ensure proper config
