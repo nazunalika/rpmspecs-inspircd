@@ -14,8 +14,6 @@
 %bcond_without geoip
 %bcond_without regex_engines
 
-%global extras_version 0.0.0+git1541186470.33d64b6
-
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
 Release:	3%{?dist}
@@ -232,7 +230,7 @@ This provides the posix module for inspircd.
 %endif
 
 %prep
-%setup -q -a 5
+%setup -q
 %patch1
 %patch2
 
