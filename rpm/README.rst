@@ -48,9 +48,7 @@ Yes, I do.
 Did you make any changes to the code?
 +++++++++++++++++++++++++++++++++++++
 
-Simple answer: No.
-
-Long answer: If you review my spec file, you will find that I do not modify the source code of InspIRCd. I make simple changes their example config files.
+Patches were added only for the default configuration.
 
 So what did you change?
 +++++++++++++++++++++++
