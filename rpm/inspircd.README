@@ -1,4 +1,4 @@
-# InspIRCd Server - 2.0.24
+# InspIRCd Server - 3.0.0
 # http://www.inspircd.org/ - Latest stable version always available here.
 #
 # Info: Package maintainer is not responsible for server damage. Use of this
@@ -11,7 +11,8 @@ of InspIRCd.
  -> InspIRCd may not support you directly. Before going to them for help, I
     highly suggest to repeat your setup via in a compiled manner to try and 
     replicate the problem. If you can successfully replicate it, they may be
-    more inclined to help you. 
+    more inclined to help you. They also have their own RPM that you can utilize
+    but there is no available spec.
 
  -> The main scripts that their source tar ball comes with is available. All of
     the functions for the "developer" or "debugging" is all in it still, in tact.

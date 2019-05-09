@@ -1,8 +1,8 @@
 ## Define global settings
 %global _hardened_build 1
-%global major_version 2
+%global major_version 3
 %global minor_version 0
-%global micro_version 27
+%global micro_version 0
 
 ## Define conditionals
 ## Change to "without" if needed
@@ -11,12 +11,12 @@
 %bcond_without pgsql
 %bcond_without sqlite
 %bcond_without ldap
-%bcond_without geoip
+%bcond_without geomaxmind
 %bcond_without regex_engines
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
-Release:	3%{?dist}
+Release:	1%{?dist}
 Summary:	Modular Internet Relay Chat server written in C++
 
 Group:		Applications/Communications
@@ -24,7 +24,6 @@ License:	GPLv2
 URL:		http://www.inspircd.org
 Source0:	https://github.com/inspircd/inspircd/archive/v%{version}.tar.gz
 Source1:	%{name}.service
-Source2:	%{name}.init
 Source3:	%{name}.logrotate
 Source4:	%{name}.README
 Source6:	%{name}.conf
@@ -35,10 +34,7 @@ Source10:	%{name}.opers
 Source11:	%{name}.motd.fedora
 
 Provides:	%{name} = %{version}-%{release}
-Provides:	%{name}2
-
-Patch1:		%{name}-2.0.27_default-inspircd-conf.patch
-Patch2:		%{name}-2.0.27_default-modules-conf.patch
+Provides:	%{name}3
 
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
@@ -51,9 +47,10 @@ BuildRequires:	openssl-devel
 BuildRequires:	tre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	sqlite-devel
-BuildRequires:	geoip-devel
+BuildRequires:	libmaxminddb-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
+BuildRequires:	re2-devel
 BuildRequires:	qrencode-devel
 BuildRequires:	gnutls-devel
 BuildRequires:	git
@@ -182,17 +179,17 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 This provides the ldap module for inspircd.
 %endif
 
-%if %{with geoip}
-%package        modules-geoip
+%if %{with geomaxmind}
+%package        modules-geomaxmind
 Summary:	GeoIP Backend Module for Inspircd
 Group:		System Environment/Libraries
 Requires:	inspircd = %{version}-%{release}
-Requires:	geoip
+Requires:	libmaxminddb
 
-%description    modules-geoip
+%description    modules-geomaxmind
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
-This provides the geoip module for inspircd.
+This provides the geomaxmind module for inspircd.
 %endif
 
 %if %{with regex_engines}
@@ -227,12 +224,21 @@ Requires:	inspircd = %{version}-%{release}
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the posix module for inspircd.
+
+%package        modules-re2
+Summary:	re2 Regex Module for Inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
+Requires:	re2
+
+%description    modules-re2
+Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
+
+This provides the re2 module for inspircd.
 %endif
 
 %prep
 %setup -q
-%patch1
-%patch2
 
 ## Enable all extras EXCEPT mssql and stdlib
 ## Doing symlinks instead of calling the configure script
@@ -259,80 +265,110 @@ pushd src/modules/
 %{__ln_s} -v extra/m_ldapoper.cpp .
 %endif
 
-%if %{with geoip}
-%{__ln_s} -v extra/m_geoip.cpp .
+%if %{with geomaxmind}
+%{__ln_s} -v extra/m_geomaxmind.cpp .
 %endif
 
 %if %{with regex_engines}
 %{__ln_s} -v extra/m_regex_pcre.cpp .
 %{__ln_s} -v extra/m_regex_posix.cpp .
 %{__ln_s} -v extra/m_regex_tre.cpp .
+%{__ln_s} -v extra/m_regex_re2.cpp .
 %endif
 
 %{__ln_s} -v extra/m_ssl_openssl.cpp .
+%{__ln_s} -v extra/m_sslrehashsignal.cpp .
 %{__ln_s} -v extra/m_ssl_gnutls.cpp .
 
 # Extras will be done here as symlinks
+# Start with 3.0 extas
+for x in \
+  m_antirandom.cpp \
+  m_autodrop.cpp \
+  m_autokick.cpp \
+  m_blockhighlight.cpp \
+  m_blockinvite.cpp \
+  m_checkbans.cpp \
+  m_close.cpp \
+  m_conn_accounts.cpp \
+  m_conn_banner.cpp \
+  m_conn_matchident.cpp \
+  m_conn_require.cpp \
+  m_conn_strictsasl.cpp \
+  m_conn_vhost.cpp \
+  m_custompenalty.cpp \
+  m_extbanbanlist.cpp \
+  m_extbanregex.cpp \
+  m_forceident.cpp \
+  m_globalmessageflood.cpp \
+  m_groups.cpp \
+  m_hideidle.cpp \
+  m_identmeta.cpp \
+  m_join0.cpp \
+  m_joinpartsno.cpp \
+  m_joinpartspam.cpp \
+  m_jumpserver.cpp \
+  m_kill_idle.cpp \
+  m_messagelength.cpp \
+  m_namedstats.cpp \
+  m_nocreate.cpp \
+  m_noprivatemode.cpp \
+  m_opmoderated.cpp \
+  m_qrcode.cpp \
+  m_randomnotice.cpp \
+  m_require_auth.cpp \
+  m_restrictmsg_duration.cpp \
+  m_rotatelog.cpp \
+  m_shed_users.cpp \
+  m_slowmode.cpp \
+  m_solvemsg.cpp \
+  m_stats_unlinked.cpp \
+  m_svsoper.cpp \
+  m_timedstaticquit.cpp \
+  m_totp.cpp \
+  m_xlinetools.cpp ; do
+    %{__ln_s} -v ../../%{name}-extras/3.0/$x .
+done
+
+# Classic 2.0 that hasn't moved yet
 for x in \
   m_accounthost.cpp \
   m_antibear.cpp \
   m_antibottler.cpp \
   m_anticaps.cpp \
-  m_antirandom.cpp \
   m_apacheauth.cpp \
   m_ascii.cpp \
   m_authy.cpp \
-  m_autodrop.cpp \
-  m_autokick.cpp \
   m_autooper.cpp \
   m_badnicks.cpp \
-  m_blockhighlight.cpp \
-  m_blockinvite.cpp \
   m_blocklistmode.cpp \
   m_cap_chghost.cpp \
   m_capnotify.cpp \
   m_cgiircban.cpp \
   m_changecap.cpp \
-  m_checkbans.cpp \
   m_ciphersuitejoin.cpp \
   m_classban.cpp \
-  m_conn_accounts.cpp \
-  m_conn_banner.cpp \
   m_conn_delayed_join.cpp \
-  m_conn_matchident.cpp \
-  m_conn_require.cpp \
-  m_conn_vhost.cpp \
-  m_custompenalty.cpp \
   m_dccblock.cpp \
   m_deferaccept.cpp \
   m_disablemodes.cpp \
-  m_extbanbanlist.cpp \
   m_extbanredirect.cpp \
-  m_extbanregex.cpp \
   m_findxline.cpp \
   m_flashpolicyd.cpp \
   m_forceident.cpp \
   m_fullversion.cpp \
-%if %{with geoip}
+%if %{with geomaxmind}
   m_geoipban.cpp \
 %endif
   m_hash_gnutls.cpp \
-  m_hideidle.cpp \
-  m_identmeta.cpp \
   m_invitenotify.cpp \
   m_ircv3_sts.cpp \
   m_ircxusernames.cpp \
-  m_join0.cpp \
   m_joinoninvite.cpp \
-  m_joinpartsno.cpp \
-  m_joinpartspam.cpp \
   m_lusersnoservices.cpp \
-  m_messagelength.cpp \
   m_moderestrict.cpp \
-  m_namedstats.cpp \
   m_nickdelay.cpp \
   m_nickin001.cpp \
-  m_nocreate.cpp \
   m_noctcp_user.cpp \
   m_nooponcreate.cpp \
   m_nouidnick.cpp \
@@ -341,28 +377,17 @@ for x in \
   m_override_umode.cpp \
   m_pretenduser.cpp \
   m_privdeaf.cpp \
-  m_qrcode.cpp \
   m_quietban.cpp \
-  m_randomnotice.cpp \
   m_rehashsslsignal.cpp \
   m_replaymsg.cpp \
-  m_require_auth.cpp \
   m_requirectcp.cpp \
-  m_restrictmsg_duration.cpp \
-  m_rotatelog.cpp \
   m_rpg.cpp \
   m_sha1.cpp \
   m_showfile.cpp \
-  m_slowmode.cpp \
-  m_solvemsg.cpp \
   m_sslmodeuser.cpp \
   m_sslstats_gnutls.cpp \
-  m_stats_unlinked.cpp \
-  m_svsoper.cpp \
-  m_timedstaticquit.cpp \
   m_topicall.cpp \
-  m_totp.cpp \
-  m_xlinetools.cpp \
+  m_whox.cpp \
   m_xmlsocket.cpp ; do 
     %{__ln_s} -v ../../%{name}-extras/2.0/$x .
 done
@@ -520,9 +545,10 @@ fi
 # All excludes
 %exclude %{_libdir}/%{name}/modules/m_ssl_gnutls.so
 %exclude %{_libdir}/%{name}/modules/m_ssl_openssl.so
+%exclude %{_libdir}/%{name}/modules/m_sslrehashsignal.so
 %exclude %{_libdir}/%{name}/modules/m_ldap*.so
 %exclude %{_libdir}/%{name}/modules/m_regex_*.so
-%exclude %{_libdir}/%{name}/modules/m_geoip.so
+%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
 %exclude %{_libdir}/%{name}/modules/m_mysql.so
 %exclude %{_libdir}/%{name}/modules/m_pgsql.so
 %exclude %{_libdir}/%{name}/modules/m_sqlite3.so
@@ -550,6 +576,7 @@ fi
 %files modules-openssl
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_ssl_openssl.so
+%{_libdir}/%{name}/modules/m_sslrehashsignal.so
 
 %files modules-gnutls
 %defattr(-, root, root, -)
@@ -576,10 +603,15 @@ fi
 %{_libdir}/%{name}/modules/m_regex_tre.so
 %endif
 
-%if %{with geoip}
-%files modules-geoip
+%files modules-re2
 %defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_geoip.so
+%{_libdir}/%{name}/modules/m_regex_re2.so
+%endif
+
+%if %{with geomaxmind}
+%files modules-geomaxmind
+%defattr(-, root, root, -)
+%{_libdir}/%{name}/modules/m_geomaxmind.so
 %endif
 
 %if %{with mysql}
@@ -601,6 +633,10 @@ fi
 %endif
 
 %changelog
+* Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
+- Rebase to 3.0.0
+- Added back re2 has EL6 is no longer a target
+
 * Mon Feb 25 2019 Louis Abel <tucklesepk@gmail.com> - 2.0.27-3
 - Automated webhook build
 - Plugin refresh
