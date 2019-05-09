@@ -329,7 +329,6 @@ for x in \
   m_accounthost.cpp \
   m_antibear.cpp \
   m_antibottler.cpp \
-  m_anticaps.cpp \
   m_apacheauth.cpp \
   m_ascii.cpp \
   m_authy.cpp \
@@ -356,7 +355,6 @@ for x in \
 %endif
   m_hash_gnutls.cpp \
   m_invitenotify.cpp \
-  m_ircv3_sts.cpp \
   m_ircxusernames.cpp \
   m_joinoninvite.cpp \
   m_lusersnoservices.cpp \
@@ -376,8 +374,6 @@ for x in \
   m_replaymsg.cpp \
   m_requirectcp.cpp \
   m_rpg.cpp \
-  m_sha1.cpp \
-  m_showfile.cpp \
   m_sslmodeuser.cpp \
   m_sslstats_gnutls.cpp \
   m_topicall.cpp \
