@@ -483,50 +483,50 @@ fi
 %exclude %{_libdir}/%{name}/modules/m_pgsql.so
 %exclude %{_libdir}/%{name}/modules/m_sqlite3.so
 # Extras
-%exclude %{_libdir}/%{name}/modules/m_antirandom.cpp
-%exclude %{_libdir}/%{name}/modules/m_autodrop.cpp
-%exclude %{_libdir}/%{name}/modules/m_autokick.cpp
-%exclude %{_libdir}/%{name}/modules/m_blockhighlight.cpp
-%exclude %{_libdir}/%{name}/modules/m_blockinvite.cpp
-%exclude %{_libdir}/%{name}/modules/m_checkbans.cpp
-%exclude %{_libdir}/%{name}/modules/m_close.cpp
-%exclude %{_libdir}/%{name}/modules/m_conn_accounts.cpp
-%exclude %{_libdir}/%{name}/modules/m_conn_banner.cpp
-%exclude %{_libdir}/%{name}/modules/m_conn_matchident.cpp
-%exclude %{_libdir}/%{name}/modules/m_conn_require.cpp
-%exclude %{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
-%exclude %{_libdir}/%{name}/modules/m_conn_vhost.cpp
-%exclude %{_libdir}/%{name}/modules/m_custompenalty.cpp
-%exclude %{_libdir}/%{name}/modules/m_extbanbanlist.cpp
-%exclude %{_libdir}/%{name}/modules/m_extbanregex.cpp
-%exclude %{_libdir}/%{name}/modules/m_forceident.cpp
-%exclude %{_libdir}/%{name}/modules/m_globalmessageflood.cpp
-%exclude %{_libdir}/%{name}/modules/m_groups.cpp
-%exclude %{_libdir}/%{name}/modules/m_hideidle.cpp
-%exclude %{_libdir}/%{name}/modules/m_identmeta.cpp
-%exclude %{_libdir}/%{name}/modules/m_join0.cpp
-%exclude %{_libdir}/%{name}/modules/m_joinpartsno.cpp
-%exclude %{_libdir}/%{name}/modules/m_joinpartspam.cpp
-%exclude %{_libdir}/%{name}/modules/m_jumpserver.cpp
-%exclude %{_libdir}/%{name}/modules/m_kill_idle.cpp
-%exclude %{_libdir}/%{name}/modules/m_messagelength.cpp
-%exclude %{_libdir}/%{name}/modules/m_namedstats.cpp
-%exclude %{_libdir}/%{name}/modules/m_nocreate.cpp
-%exclude %{_libdir}/%{name}/modules/m_noprivatemode.cpp
-%exclude %{_libdir}/%{name}/modules/m_opmoderated.cpp
-%exclude %{_libdir}/%{name}/modules/m_qrcode.cpp
-%exclude %{_libdir}/%{name}/modules/m_randomnotice.cpp
-%exclude %{_libdir}/%{name}/modules/m_require_auth.cpp
-%exclude %{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
-%exclude %{_libdir}/%{name}/modules/m_rotatelog.cpp
-%exclude %{_libdir}/%{name}/modules/m_shed_users.cpp
-%exclude %{_libdir}/%{name}/modules/m_slowmode.cpp
-%exclude %{_libdir}/%{name}/modules/m_solvemsg.cpp
-%exclude %{_libdir}/%{name}/modules/m_stats_unlinked.cpp
-%exclude %{_libdir}/%{name}/modules/m_svsoper.cpp
-%exclude %{_libdir}/%{name}/modules/m_timedstaticquit.cpp
-%exclude %{_libdir}/%{name}/modules/m_totp.cpp
-%exclude %{_libdir}/%{name}/modules/m_xlinetools.cpp
+#%exclude %{_libdir}/%{name}/modules/m_antirandom.cpp
+#%exclude %{_libdir}/%{name}/modules/m_autodrop.cpp
+#%exclude %{_libdir}/%{name}/modules/m_autokick.cpp
+#%exclude %{_libdir}/%{name}/modules/m_blockhighlight.cpp
+#%exclude %{_libdir}/%{name}/modules/m_blockinvite.cpp
+#%exclude %{_libdir}/%{name}/modules/m_checkbans.cpp
+#%exclude %{_libdir}/%{name}/modules/m_close.cpp
+#%exclude %{_libdir}/%{name}/modules/m_conn_accounts.cpp
+#%exclude %{_libdir}/%{name}/modules/m_conn_banner.cpp
+#%exclude %{_libdir}/%{name}/modules/m_conn_matchident.cpp
+#%exclude %{_libdir}/%{name}/modules/m_conn_require.cpp
+#%exclude %{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
+#%exclude %{_libdir}/%{name}/modules/m_conn_vhost.cpp
+#%exclude %{_libdir}/%{name}/modules/m_custompenalty.cpp
+#%exclude %{_libdir}/%{name}/modules/m_extbanbanlist.cpp
+#%exclude %{_libdir}/%{name}/modules/m_extbanregex.cpp
+#%exclude %{_libdir}/%{name}/modules/m_forceident.cpp
+#%exclude %{_libdir}/%{name}/modules/m_globalmessageflood.cpp
+#%exclude %{_libdir}/%{name}/modules/m_groups.cpp
+#%exclude %{_libdir}/%{name}/modules/m_hideidle.cpp
+#%exclude %{_libdir}/%{name}/modules/m_identmeta.cpp
+#%exclude %{_libdir}/%{name}/modules/m_join0.cpp
+#%exclude %{_libdir}/%{name}/modules/m_joinpartsno.cpp
+#%exclude %{_libdir}/%{name}/modules/m_joinpartspam.cpp
+#%exclude %{_libdir}/%{name}/modules/m_jumpserver.cpp
+#%exclude %{_libdir}/%{name}/modules/m_kill_idle.cpp
+#%exclude %{_libdir}/%{name}/modules/m_messagelength.cpp
+#%exclude %{_libdir}/%{name}/modules/m_namedstats.cpp
+#%exclude %{_libdir}/%{name}/modules/m_nocreate.cpp
+#%exclude %{_libdir}/%{name}/modules/m_noprivatemode.cpp
+#%exclude %{_libdir}/%{name}/modules/m_opmoderated.cpp
+#%exclude %{_libdir}/%{name}/modules/m_qrcode.cpp
+#%exclude %{_libdir}/%{name}/modules/m_randomnotice.cpp
+#%exclude %{_libdir}/%{name}/modules/m_require_auth.cpp
+#%exclude %{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
+#%exclude %{_libdir}/%{name}/modules/m_rotatelog.cpp
+#%exclude %{_libdir}/%{name}/modules/m_shed_users.cpp
+#%exclude %{_libdir}/%{name}/modules/m_slowmode.cpp
+#%exclude %{_libdir}/%{name}/modules/m_solvemsg.cpp
+#%exclude %{_libdir}/%{name}/modules/m_stats_unlinked.cpp
+#%exclude %{_libdir}/%{name}/modules/m_svsoper.cpp
+#%exclude %{_libdir}/%{name}/modules/m_timedstaticquit.cpp
+#%exclude %{_libdir}/%{name}/modules/m_totp.cpp
+#%exclude %{_libdir}/%{name}/modules/m_xlinetools.cpp
 
 # OS Specific
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -602,52 +602,52 @@ fi
 %{_libdir}/%{name}/modules/m_sqlite3.so
 %endif
 
-%files extras
-%defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_antirandom.cpp
-%{_libdir}/%{name}/modules/m_autodrop.cpp
-%{_libdir}/%{name}/modules/m_autokick.cpp
-%{_libdir}/%{name}/modules/m_blockhighlight.cpp
-%{_libdir}/%{name}/modules/m_blockinvite.cpp
-%{_libdir}/%{name}/modules/m_checkbans.cpp
-%{_libdir}/%{name}/modules/m_close.cpp
-%{_libdir}/%{name}/modules/m_conn_accounts.cpp
-%{_libdir}/%{name}/modules/m_conn_banner.cpp
-%{_libdir}/%{name}/modules/m_conn_matchident.cpp
-%{_libdir}/%{name}/modules/m_conn_require.cpp
-%{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
-%{_libdir}/%{name}/modules/m_conn_vhost.cpp
-%{_libdir}/%{name}/modules/m_custompenalty.cpp
-%{_libdir}/%{name}/modules/m_extbanbanlist.cpp
-%{_libdir}/%{name}/modules/m_extbanregex.cpp
-%{_libdir}/%{name}/modules/m_forceident.cpp
-%{_libdir}/%{name}/modules/m_globalmessageflood.cpp
-%{_libdir}/%{name}/modules/m_groups.cpp
-%{_libdir}/%{name}/modules/m_hideidle.cpp
-%{_libdir}/%{name}/modules/m_identmeta.cpp
-%{_libdir}/%{name}/modules/m_join0.cpp
-%{_libdir}/%{name}/modules/m_joinpartsno.cpp
-%{_libdir}/%{name}/modules/m_joinpartspam.cpp
-%{_libdir}/%{name}/modules/m_jumpserver.cpp
-%{_libdir}/%{name}/modules/m_kill_idle.cpp
-%{_libdir}/%{name}/modules/m_messagelength.cpp
-%{_libdir}/%{name}/modules/m_namedstats.cpp
-%{_libdir}/%{name}/modules/m_nocreate.cpp
-%{_libdir}/%{name}/modules/m_noprivatemode.cpp
-%{_libdir}/%{name}/modules/m_opmoderated.cpp
-%{_libdir}/%{name}/modules/m_qrcode.cpp
-%{_libdir}/%{name}/modules/m_randomnotice.cpp
-%{_libdir}/%{name}/modules/m_require_auth.cpp
-%{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
-%{_libdir}/%{name}/modules/m_rotatelog.cpp
-%{_libdir}/%{name}/modules/m_shed_users.cpp
-%{_libdir}/%{name}/modules/m_slowmode.cpp
-%{_libdir}/%{name}/modules/m_solvemsg.cpp
-%{_libdir}/%{name}/modules/m_stats_unlinked.cpp
-%{_libdir}/%{name}/modules/m_svsoper.cpp
-%{_libdir}/%{name}/modules/m_timedstaticquit.cpp
-%{_libdir}/%{name}/modules/m_totp.cpp
-%{_libdir}/%{name}/modules/m_xlinetools.cpp
+#%files extras
+#%defattr(-, root, root, -)
+#%{_libdir}/%{name}/modules/m_antirandom.cpp
+#%{_libdir}/%{name}/modules/m_autodrop.cpp
+#%{_libdir}/%{name}/modules/m_autokick.cpp
+#%{_libdir}/%{name}/modules/m_blockhighlight.cpp
+#%{_libdir}/%{name}/modules/m_blockinvite.cpp
+#%{_libdir}/%{name}/modules/m_checkbans.cpp
+#%{_libdir}/%{name}/modules/m_close.cpp
+#%{_libdir}/%{name}/modules/m_conn_accounts.cpp
+#%{_libdir}/%{name}/modules/m_conn_banner.cpp
+#%{_libdir}/%{name}/modules/m_conn_matchident.cpp
+#%{_libdir}/%{name}/modules/m_conn_require.cpp
+#%{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
+#%{_libdir}/%{name}/modules/m_conn_vhost.cpp
+#%{_libdir}/%{name}/modules/m_custompenalty.cpp
+#%{_libdir}/%{name}/modules/m_extbanbanlist.cpp
+#%{_libdir}/%{name}/modules/m_extbanregex.cpp
+#%{_libdir}/%{name}/modules/m_forceident.cpp
+#%{_libdir}/%{name}/modules/m_globalmessageflood.cpp
+#%{_libdir}/%{name}/modules/m_groups.cpp
+#%{_libdir}/%{name}/modules/m_hideidle.cpp
+#%{_libdir}/%{name}/modules/m_identmeta.cpp
+#%{_libdir}/%{name}/modules/m_join0.cpp
+#%{_libdir}/%{name}/modules/m_joinpartsno.cpp
+#%{_libdir}/%{name}/modules/m_joinpartspam.cpp
+#%{_libdir}/%{name}/modules/m_jumpserver.cpp
+#%{_libdir}/%{name}/modules/m_kill_idle.cpp
+#%{_libdir}/%{name}/modules/m_messagelength.cpp
+#%{_libdir}/%{name}/modules/m_namedstats.cpp
+#%{_libdir}/%{name}/modules/m_nocreate.cpp
+#%{_libdir}/%{name}/modules/m_noprivatemode.cpp
+#%{_libdir}/%{name}/modules/m_opmoderated.cpp
+#%{_libdir}/%{name}/modules/m_qrcode.cpp
+#%{_libdir}/%{name}/modules/m_randomnotice.cpp
+#%{_libdir}/%{name}/modules/m_require_auth.cpp
+#%{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
+#%{_libdir}/%{name}/modules/m_rotatelog.cpp
+#%{_libdir}/%{name}/modules/m_shed_users.cpp
+#%{_libdir}/%{name}/modules/m_slowmode.cpp
+#%{_libdir}/%{name}/modules/m_solvemsg.cpp
+#%{_libdir}/%{name}/modules/m_stats_unlinked.cpp
+#%{_libdir}/%{name}/modules/m_svsoper.cpp
+#%{_libdir}/%{name}/modules/m_timedstaticquit.cpp
+#%{_libdir}/%{name}/modules/m_totp.cpp
+#%{_libdir}/%{name}/modules/m_xlinetools.cpp
 
 %changelog
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
