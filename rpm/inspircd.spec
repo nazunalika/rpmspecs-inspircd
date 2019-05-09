@@ -236,6 +236,17 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 This provides the re2 module for inspircd.
 %endif
 
+%package	extras
+Summary:	Contrib modules for inspircd
+Group:		System Environment/Libraries
+Requires:	inspircd = %{version}-%{release}
+
+%description	extras
+Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
+
+This provides the extras modules from the inspircd-extras git repo. These modules
+are not directly supported by inspircd.
+
 %prep
 %setup -q
 
@@ -275,7 +286,7 @@ pushd src/modules/
 %{__ln_s} -v extra/m_ssl_gnutls.cpp .
 
 # Extras will be done here as symlinks
-# Start with 3.0 extas
+# Start with 3.0 extas not part of 3.0.0 base
 for x in \
   m_antirandom.cpp \
   m_autodrop.cpp \
@@ -337,10 +348,8 @@ for x in \
   m_blocklistmode.cpp \
   m_cap_chghost.cpp \
   m_capnotify.cpp \
-  m_cgiircban.cpp \
   m_changecap.cpp \
   m_ciphersuitejoin.cpp \
-  m_classban.cpp \
   m_conn_delayed_join.cpp \
   m_dccblock.cpp \
   m_deferaccept.cpp \
@@ -621,11 +630,112 @@ fi
 %{_libdir}/%{name}/modules/m_sqlite3.so
 %endif
 
+%files extras
+%defattr(-, root, root, -)
+%{_libdir}/%{name}/modules/m_antirandom.cpp
+%{_libdir}/%{name}/modules/m_autodrop.cpp
+%{_libdir}/%{name}/modules/m_autokick.cpp
+%{_libdir}/%{name}/modules/m_blockhighlight.cpp
+%{_libdir}/%{name}/modules/m_blockinvite.cpp
+%{_libdir}/%{name}/modules/m_checkbans.cpp
+%{_libdir}/%{name}/modules/m_close.cpp
+%{_libdir}/%{name}/modules/m_conn_accounts.cpp
+%{_libdir}/%{name}/modules/m_conn_banner.cpp
+%{_libdir}/%{name}/modules/m_conn_matchident.cpp
+%{_libdir}/%{name}/modules/m_conn_require.cpp
+%{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
+%{_libdir}/%{name}/modules/m_conn_vhost.cpp
+%{_libdir}/%{name}/modules/m_custompenalty.cpp
+%{_libdir}/%{name}/modules/m_extbanbanlist.cpp
+%{_libdir}/%{name}/modules/m_extbanregex.cpp
+%{_libdir}/%{name}/modules/m_forceident.cpp
+%{_libdir}/%{name}/modules/m_globalmessageflood.cpp
+%{_libdir}/%{name}/modules/m_groups.cpp
+%{_libdir}/%{name}/modules/m_hideidle.cpp
+%{_libdir}/%{name}/modules/m_identmeta.cpp
+%{_libdir}/%{name}/modules/m_join0.cpp
+%{_libdir}/%{name}/modules/m_joinpartsno.cpp
+%{_libdir}/%{name}/modules/m_joinpartspam.cpp
+%{_libdir}/%{name}/modules/m_jumpserver.cpp
+%{_libdir}/%{name}/modules/m_kill_idle.cpp
+%{_libdir}/%{name}/modules/m_messagelength.cpp
+%{_libdir}/%{name}/modules/m_namedstats.cpp
+%{_libdir}/%{name}/modules/m_nocreate.cpp
+%{_libdir}/%{name}/modules/m_noprivatemode.cpp
+%{_libdir}/%{name}/modules/m_opmoderated.cpp
+%{_libdir}/%{name}/modules/m_qrcode.cpp
+%{_libdir}/%{name}/modules/m_randomnotice.cpp
+%{_libdir}/%{name}/modules/m_require_auth.cpp
+%{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
+%{_libdir}/%{name}/modules/m_rotatelog.cpp
+%{_libdir}/%{name}/modules/m_shed_users.cpp
+%{_libdir}/%{name}/modules/m_slowmode.cpp
+%{_libdir}/%{name}/modules/m_solvemsg.cpp
+%{_libdir}/%{name}/modules/m_stats_unlinked.cpp
+%{_libdir}/%{name}/modules/m_svsoper.cpp
+%{_libdir}/%{name}/modules/m_timedstaticquit.cpp
+%{_libdir}/%{name}/modules/m_totp.cpp
+%{_libdir}/%{name}/modules/m_xlinetools.cpp
+# classic
+%{_libdir}/%{name}/modules/m_accounthost.cpp
+%{_libdir}/%{name}/modules/m_antibear.cpp
+%{_libdir}/%{name}/modules/m_antibottler.cpp
+%{_libdir}/%{name}/modules/m_apacheauth.cpp
+%{_libdir}/%{name}/modules/m_ascii.cpp
+%{_libdir}/%{name}/modules/m_authy.cpp
+%{_libdir}/%{name}/modules/m_autooper.cpp
+%{_libdir}/%{name}/modules/m_badnicks.cpp
+%{_libdir}/%{name}/modules/m_blocklistmode.cpp
+%{_libdir}/%{name}/modules/m_cap_chghost.cpp
+%{_libdir}/%{name}/modules/m_capnotify.cpp
+%{_libdir}/%{name}/modules/m_changecap.cpp
+%{_libdir}/%{name}/modules/m_ciphersuitejoin.cpp
+%{_libdir}/%{name}/modules/m_conn_delayed_join.cpp
+%{_libdir}/%{name}/modules/m_dccblock.cpp
+%{_libdir}/%{name}/modules/m_deferaccept.cpp
+%{_libdir}/%{name}/modules/m_disablemodes.cpp
+%{_libdir}/%{name}/modules/m_extbanredirect.cpp
+%{_libdir}/%{name}/modules/m_findxline.cpp
+%{_libdir}/%{name}/modules/m_flashpolicyd.cpp
+%{_libdir}/%{name}/modules/m_forceident.cpp
+%{_libdir}/%{name}/modules/m_fullversion.cpp
+%if %{with geomaxmind}
+%{_libdir}/%{name}/modules/m_geoipban.cpp
+%endif
+%{_libdir}/%{name}/modules/m_hash_gnutls.cpp
+%{_libdir}/%{name}/modules/m_invitenotify.cpp
+%{_libdir}/%{name}/modules/m_ircxusernames.cpp
+%{_libdir}/%{name}/modules/m_joinoninvite.cpp
+%{_libdir}/%{name}/modules/m_lusersnoservices.cpp
+%{_libdir}/%{name}/modules/m_moderestrict.cpp
+%{_libdir}/%{name}/modules/m_nickdelay.cpp
+%{_libdir}/%{name}/modules/m_nickin001.cpp
+%{_libdir}/%{name}/modules/m_noctcp_user.cpp
+%{_libdir}/%{name}/modules/m_nooponcreate.cpp
+%{_libdir}/%{name}/modules/m_nouidnick.cpp
+%{_libdir}/%{name}/modules/m_opban.cpp
+%{_libdir}/%{name}/modules/m_opmoderated.cpp
+%{_libdir}/%{name}/modules/m_override_umode.cpp
+%{_libdir}/%{name}/modules/m_pretenduser.cpp
+%{_libdir}/%{name}/modules/m_privdeaf.cpp
+%{_libdir}/%{name}/modules/m_quietban.cpp
+%{_libdir}/%{name}/modules/m_rehashsslsignal.cpp
+%{_libdir}/%{name}/modules/m_replaymsg.cpp
+%{_libdir}/%{name}/modules/m_requirectcp.cpp
+%{_libdir}/%{name}/modules/m_rpg.cpp
+%{_libdir}/%{name}/modules/m_sslmodeuser.cpp
+%{_libdir}/%{name}/modules/m_sslstats_gnutls.cpp
+%{_libdir}/%{name}/modules/m_topicall.cpp
+%{_libdir}/%{name}/modules/m_whox.cpp
+%{_libdir}/%{name}/modules/m_xmlsocket.cpp 
+
 %changelog
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
 - Rebase to 3.0.0
 - Added back re2 has EL6 is no longer a target
 - Removed symlinked modules that are already built in to 3.x
+- Created extras package to separate contrib from builtin
+  modules
 
 * Mon Feb 25 2019 Louis Abel <tucklesepk@gmail.com> - 2.0.27-3
 - Automated webhook build
