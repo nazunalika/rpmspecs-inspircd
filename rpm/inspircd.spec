@@ -356,7 +356,6 @@ for x in \
   m_disablemodes.cpp \
   m_extbanredirect.cpp \
   m_findxline.cpp \
-  m_flashpolicyd.cpp \
   m_forceident.cpp \
   m_fullversion.cpp \
 %if %{with geomaxmind}
@@ -696,7 +695,6 @@ fi
 %{_libdir}/%{name}/modules/m_disablemodes.cpp
 %{_libdir}/%{name}/modules/m_extbanredirect.cpp
 %{_libdir}/%{name}/modules/m_findxline.cpp
-%{_libdir}/%{name}/modules/m_flashpolicyd.cpp
 %{_libdir}/%{name}/modules/m_forceident.cpp
 %{_libdir}/%{name}/modules/m_fullversion.cpp
 %if %{with geomaxmind}
