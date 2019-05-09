@@ -10,7 +10,6 @@
 %bcond_without mysql
 %bcond_without pgsql
 %bcond_without sqlite
-%bcond_without ldap
 %bcond_without geomaxmind
 %bcond_without regex_engines
 
@@ -258,11 +257,6 @@ pushd src/modules/
 
 %if %{with sqlite}
 %{__ln_s} -v extra/m_sqlite3.cpp .
-%endif
-
-%if %{with ldap}
-%{__ln_s} -v extra/m_ldapauth.cpp .
-%{__ln_s} -v extra/m_ldapoper.cpp .
 %endif
 
 %if %{with geomaxmind}
@@ -635,6 +629,7 @@ fi
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
 - Rebase to 3.0.0
 - Added back re2 has EL6 is no longer a target
+- Removed symlinked modules that are already built in to 3.x
 
 * Mon Feb 25 2019 Louis Abel <tucklesepk@gmail.com> - 2.0.27-3
 - Automated webhook build
