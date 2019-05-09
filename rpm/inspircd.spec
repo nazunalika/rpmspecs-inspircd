@@ -442,10 +442,10 @@ fi
 %dir %attr(0750,root,inspircd) %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/examples
 %{_sysconfdir}/%{name}/examples/*.example
-%dir %{_sysconfdir}/%{name}/examples/aliases
-%{_sysconfdir}/%{name}/examples/aliases/*.example
-%dir %{_sysconfdir}/%{name}/examples/modules
-%{_sysconfdir}/%{name}/examples/modules/*.example
+%dir %{_sysconfdir}/%{name}/examples/services
+%{_sysconfdir}/%{name}/examples/services/*.example
+%dir %{_sysconfdir}/%{name}/examples/sql
+%{_sysconfdir}/%{name}/examples/sql/*.sql
 
 # Default configurations
 %config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.conf
@@ -478,7 +478,7 @@ fi
 %exclude %{_libdir}/%{name}/modules/m_sslrehashsignal.so
 %exclude %{_libdir}/%{name}/modules/m_ldap*.so
 %exclude %{_libdir}/%{name}/modules/m_regex_*.so
-%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
+#%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
 %exclude %{_libdir}/%{name}/modules/m_mysql.so
 %exclude %{_libdir}/%{name}/modules/m_pgsql.so
 %exclude %{_libdir}/%{name}/modules/m_sqlite3.so
