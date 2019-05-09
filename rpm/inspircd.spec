@@ -436,7 +436,7 @@ fi
 
 %files
 %defattr(-, root, root, -)
-%doc docs/LICENSE.txt docs/Doxyfile docs/rfc/* README.md README.info
+%doc docs/LICENSE.txt docs/Doxyfile docs/sql/* README.md README.info
 
 %{_sbindir}/%{name}
 %dir %attr(0750,root,inspircd) %{_sysconfdir}/%{name}
