@@ -44,8 +44,8 @@ BuildRequires:	gcc-c++
 BuildRequires:	openssl-devel
 BuildRequires:	tre-devel
 BuildRequires:	postgresql-devel
-BuildRequires:	sqlite-devel
-BuildRequires:	libmaxminddb-devel
+BuildRequires:	pkgconfig(sqlite3)
+#BuildRequires:	libmaxminddb-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
 #BuildRequires:	re2-devel
@@ -376,13 +376,13 @@ popd
 %endif
 
 # development headers
-%{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{commands,modes,threadengines}
+%{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{commands,modules,threadengines}
 %{__install} -m 0644 include/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}
 %{__install} -m 0644 include/commands/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}/commands
-%{__install} -m 0644 include/modes/*.h \
-	${RPM_BUILD_ROOT}%{_includedir}/%{name}/modes
+%{__install} -m 0644 include/modules/*.h \
+	${RPM_BUILD_ROOT}%{_includedir}/%{name}/modules
 %{__install} -m 0644 include/threadengines/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}/threadengines
 
@@ -496,11 +496,11 @@ fi
 %defattr (0644,root,root,0755)
 %dir %{_includedir}/%{name}
 %dir %{_includedir}/%{name}/commands
-%dir %{_includedir}/%{name}/modes
+%dir %{_includedir}/%{name}/modules
 %dir %{_includedir}/%{name}/threadengines
 %{_includedir}/%{name}/*.h
 %{_includedir}/%{name}/commands/*.h
-%{_includedir}/%{name}/modes/*.h
+%{_includedir}/%{name}/modules/*.h
 %{_includedir}/%{name}/threadengines/*.h
 
 %files modules-openssl
