@@ -399,6 +399,10 @@ popd
 %{__install} -m 0660 %{SOURCE11} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.motd
 %endif
 
+# Man pages
+%{__install} -d -m 0755 ${RPM_BUILD_ROOT}/%{_mandir}
+mv ${RPM_BUILD_ROOT}/%{_datadir}/%{name}/manuals/*.1 ${RPM_BUILD_ROOT}/%{_mandir}/man1
+
 %pre
 # Since we are not an official Fedora build, we don't get an
 # assigned uid/gid. This may make it difficult when installed
@@ -439,6 +443,7 @@ fi
 %doc docs/LICENSE.txt docs/Doxyfile docs/sql/* README.md README.info
 
 %{_sbindir}/%{name}
+%{_sbindir}/%{name}-genssl
 %dir %attr(0750,root,inspircd) %{_sysconfdir}/%{name}
 %dir %{_sysconfdir}/%{name}/examples
 %{_sysconfdir}/%{name}/examples/*.example
@@ -446,6 +451,9 @@ fi
 %{_sysconfdir}/%{name}/examples/services/*.example
 %dir %{_sysconfdir}/%{name}/examples/sql
 %{_sysconfdir}/%{name}/examples/sql/*.sql
+
+%{_mandir}/man1/inspircd-genssl.1*
+%{_mandir}/man1/inspircd.1*
 
 # Default configurations
 %config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.conf
@@ -473,15 +481,20 @@ fi
 %config(noreplace) %attr(-,root,root) %{_sysconfdir}/logrotate.d/%{name}
 
 # All excludes
+# Removing their custom 'service' - At some point I will open a PR
+# to change their unit to be better supported under systemd
+%exclude %{_datadir}/%{name}/inspircd.service
+%exclude %dir %{_datadir}/%{name}/manuals
+# Modules
 %exclude %{_libdir}/%{name}/modules/m_ssl_gnutls.so
 %exclude %{_libdir}/%{name}/modules/m_ssl_openssl.so
 %exclude %{_libdir}/%{name}/modules/m_sslrehashsignal.so
 %exclude %{_libdir}/%{name}/modules/m_ldap*.so
 %exclude %{_libdir}/%{name}/modules/m_regex_*.so
-#%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
 %exclude %{_libdir}/%{name}/modules/m_mysql.so
 %exclude %{_libdir}/%{name}/modules/m_pgsql.so
 %exclude %{_libdir}/%{name}/modules/m_sqlite3.so
+#%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
 # Extras
 #%exclude %{_libdir}/%{name}/modules/m_antirandom.cpp
 #%exclude %{_libdir}/%{name}/modules/m_autodrop.cpp
@@ -653,9 +666,10 @@ fi
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
 - Rebase to 3.0.0
 - Removed symlinked modules that are already built in to 3.x
-- Created extras package to separate contrib from builtin
-  modules
+- Removed all current extras for now
 - 2.0 modules no longer compiled
+- Removed upstream systemd unit
+- Moved manual pages
 
 * Mon Feb 25 2019 Louis Abel <tucklesepk@gmail.com> - 2.0.27-3
 - Automated webhook build
