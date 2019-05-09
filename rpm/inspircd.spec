@@ -601,7 +601,6 @@ fi
 %files modules-tre
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_regex_tre.so
-%endif
 
 %files modules-re2
 %defattr(-, root, root, -)
