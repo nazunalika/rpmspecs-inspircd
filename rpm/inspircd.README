@@ -35,3 +35,9 @@ of InspIRCd.
     -> c-ares: yum install c-ares
     -> tre: yum install tre
 
+ -> If you installed the extras package and you're wondering where a module is, you
+    may need to see if it was either replaced by a built in module. In the event that
+    it hasn't, you may need to visit the inspircd-extras git repo and attempt to compile
+    against this release. Please note that the extras package deliberately left out
+    the 2.0 extras modules.
+

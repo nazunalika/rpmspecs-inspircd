@@ -10,7 +10,6 @@
 %bcond_without mysql
 %bcond_without pgsql
 %bcond_without sqlite
-%bcond_without geomaxmind
 %bcond_without regex_engines
 
 Name:		inspircd
@@ -335,59 +334,6 @@ for x in \
     %{__ln_s} -v ../../%{name}-extras/3.0/$x .
 done
 
-# Classic 2.0 that hasn't moved yet
-for x in \
-  m_accounthost.cpp \
-  m_antibear.cpp \
-  m_antibottler.cpp \
-  m_apacheauth.cpp \
-  m_ascii.cpp \
-  m_authy.cpp \
-  m_autooper.cpp \
-  m_badnicks.cpp \
-  m_blocklistmode.cpp \
-  m_cap_chghost.cpp \
-  m_capnotify.cpp \
-  m_changecap.cpp \
-  m_ciphersuitejoin.cpp \
-  m_conn_delayed_join.cpp \
-  m_dccblock.cpp \
-  m_deferaccept.cpp \
-  m_disablemodes.cpp \
-  m_extbanredirect.cpp \
-  m_findxline.cpp \
-  m_fullversion.cpp \
-%if %{with geomaxmind}
-  m_geoipban.cpp \
-%endif
-  m_hash_gnutls.cpp \
-  m_invitenotify.cpp \
-  m_ircxusernames.cpp \
-  m_joinoninvite.cpp \
-  m_lusersnoservices.cpp \
-  m_moderestrict.cpp \
-  m_nickdelay.cpp \
-  m_nickin001.cpp \
-  m_noctcp_user.cpp \
-  m_nooponcreate.cpp \
-  m_nouidnick.cpp \
-  m_opban.cpp \
-  m_override_umode.cpp \
-  m_pretenduser.cpp \
-  m_privdeaf.cpp \
-  m_quietban.cpp \
-  m_rehashsslsignal.cpp \
-  m_replaymsg.cpp \
-  m_requirectcp.cpp \
-  m_rpg.cpp \
-  m_sslmodeuser.cpp \
-  m_sslstats_gnutls.cpp \
-  m_topicall.cpp \
-  m_whox.cpp \
-  m_xmlsocket.cpp ; do 
-    %{__ln_s} -v ../../%{name}-extras/2.0/$x .
-done
-
 popd
 
 %build
@@ -673,55 +619,6 @@ fi
 %{_libdir}/%{name}/modules/m_timedstaticquit.cpp
 %{_libdir}/%{name}/modules/m_totp.cpp
 %{_libdir}/%{name}/modules/m_xlinetools.cpp
-# classic
-%{_libdir}/%{name}/modules/m_accounthost.cpp
-%{_libdir}/%{name}/modules/m_antibear.cpp
-%{_libdir}/%{name}/modules/m_antibottler.cpp
-%{_libdir}/%{name}/modules/m_apacheauth.cpp
-%{_libdir}/%{name}/modules/m_ascii.cpp
-%{_libdir}/%{name}/modules/m_authy.cpp
-%{_libdir}/%{name}/modules/m_autooper.cpp
-%{_libdir}/%{name}/modules/m_badnicks.cpp
-%{_libdir}/%{name}/modules/m_blocklistmode.cpp
-%{_libdir}/%{name}/modules/m_cap_chghost.cpp
-%{_libdir}/%{name}/modules/m_capnotify.cpp
-%{_libdir}/%{name}/modules/m_changecap.cpp
-%{_libdir}/%{name}/modules/m_ciphersuitejoin.cpp
-%{_libdir}/%{name}/modules/m_conn_delayed_join.cpp
-%{_libdir}/%{name}/modules/m_dccblock.cpp
-%{_libdir}/%{name}/modules/m_deferaccept.cpp
-%{_libdir}/%{name}/modules/m_disablemodes.cpp
-%{_libdir}/%{name}/modules/m_extbanredirect.cpp
-%{_libdir}/%{name}/modules/m_findxline.cpp
-%{_libdir}/%{name}/modules/m_fullversion.cpp
-%if %{with geomaxmind}
-%{_libdir}/%{name}/modules/m_geoipban.cpp
-%endif
-%{_libdir}/%{name}/modules/m_hash_gnutls.cpp
-%{_libdir}/%{name}/modules/m_invitenotify.cpp
-%{_libdir}/%{name}/modules/m_ircxusernames.cpp
-%{_libdir}/%{name}/modules/m_joinoninvite.cpp
-%{_libdir}/%{name}/modules/m_lusersnoservices.cpp
-%{_libdir}/%{name}/modules/m_moderestrict.cpp
-%{_libdir}/%{name}/modules/m_nickdelay.cpp
-%{_libdir}/%{name}/modules/m_nickin001.cpp
-%{_libdir}/%{name}/modules/m_noctcp_user.cpp
-%{_libdir}/%{name}/modules/m_nooponcreate.cpp
-%{_libdir}/%{name}/modules/m_nouidnick.cpp
-%{_libdir}/%{name}/modules/m_opban.cpp
-%{_libdir}/%{name}/modules/m_override_umode.cpp
-%{_libdir}/%{name}/modules/m_pretenduser.cpp
-%{_libdir}/%{name}/modules/m_privdeaf.cpp
-%{_libdir}/%{name}/modules/m_quietban.cpp
-%{_libdir}/%{name}/modules/m_rehashsslsignal.cpp
-%{_libdir}/%{name}/modules/m_replaymsg.cpp
-%{_libdir}/%{name}/modules/m_requirectcp.cpp
-%{_libdir}/%{name}/modules/m_rpg.cpp
-%{_libdir}/%{name}/modules/m_sslmodeuser.cpp
-%{_libdir}/%{name}/modules/m_sslstats_gnutls.cpp
-%{_libdir}/%{name}/modules/m_topicall.cpp
-%{_libdir}/%{name}/modules/m_whox.cpp
-%{_libdir}/%{name}/modules/m_xmlsocket.cpp 
 
 %changelog
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
@@ -730,6 +627,7 @@ fi
 - Removed symlinked modules that are already built in to 3.x
 - Created extras package to separate contrib from builtin
   modules
+- 2.0 modules no longer compiled
 
 * Mon Feb 25 2019 Louis Abel <tucklesepk@gmail.com> - 2.0.27-3
 - Automated webhook build

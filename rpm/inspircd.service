@@ -1,6 +1,15 @@
+# InspIRCd 
+#
+# This file is part of the InspIRCd package provided by nalika in copr. You may
+# modify it as necessary to fit your environment and needs. In the event you
+# make changes, please place the file in /etc/systemd/system to ensure package
+# updates do not override your changes.
+# 
+
 [Unit]
-Description=InspIRCd Server
+Description=InspIRCd - Internet Relay Chat Daemon
 After=network.target
+Requires=network.target
 
 [Service]
 Type=simple
