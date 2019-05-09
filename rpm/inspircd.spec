@@ -372,7 +372,6 @@ for x in \
   m_nooponcreate.cpp \
   m_nouidnick.cpp \
   m_opban.cpp \
-  m_opmoderated.cpp \
   m_override_umode.cpp \
   m_pretenduser.cpp \
   m_privdeaf.cpp \
@@ -710,7 +709,6 @@ fi
 %{_libdir}/%{name}/modules/m_nooponcreate.cpp
 %{_libdir}/%{name}/modules/m_nouidnick.cpp
 %{_libdir}/%{name}/modules/m_opban.cpp
-%{_libdir}/%{name}/modules/m_opmoderated.cpp
 %{_libdir}/%{name}/modules/m_override_umode.cpp
 %{_libdir}/%{name}/modules/m_pretenduser.cpp
 %{_libdir}/%{name}/modules/m_privdeaf.cpp
