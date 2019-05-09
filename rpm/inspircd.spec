@@ -48,7 +48,7 @@ BuildRequires:	sqlite-devel
 BuildRequires:	libmaxminddb-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
-BuildRequires:	re2-devel
+#BuildRequires:	re2-devel
 BuildRequires:	qrencode-devel
 BuildRequires:	gnutls-devel
 BuildRequires:	git
@@ -222,17 +222,6 @@ Requires:	inspircd = %{version}-%{release}
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the posix module for inspircd.
-
-%package        modules-re2
-Summary:	re2 Regex Module for Inspircd
-Group:		System Environment/Libraries
-Requires:	inspircd = %{version}-%{release}
-Requires:	re2
-
-%description    modules-re2
-Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
-
-This provides the re2 module for inspircd.
 %endif
 
 %package	extras
@@ -277,7 +266,6 @@ pushd src/modules/
 %{__ln_s} -v extra/m_regex_pcre.cpp .
 %{__ln_s} -v extra/m_regex_posix.cpp .
 %{__ln_s} -v extra/m_regex_tre.cpp .
-%{__ln_s} -v extra/m_regex_re2.cpp .
 %endif
 
 %{__ln_s} -v extra/m_ssl_openssl.cpp .
@@ -543,10 +531,6 @@ fi
 %files modules-tre
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_regex_tre.so
-
-%files modules-re2
-%defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_regex_re2.so
 %endif
 
 %if %{with geomaxmind}
@@ -623,7 +607,6 @@ fi
 %changelog
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
 - Rebase to 3.0.0
-- Added back re2 has EL6 is no longer a target
 - Removed symlinked modules that are already built in to 3.x
 - Created extras package to separate contrib from builtin
   modules
