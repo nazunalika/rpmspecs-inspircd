@@ -400,7 +400,7 @@ popd
 %endif
 
 # Man pages
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}/%{_mandir}
+%{__install} -d -m 0755 ${RPM_BUILD_ROOT}/%{_mandir}/man1
 mv ${RPM_BUILD_ROOT}/%{_datadir}/%{name}/manuals/*.1 ${RPM_BUILD_ROOT}/%{_mandir}/man1
 
 %pre
