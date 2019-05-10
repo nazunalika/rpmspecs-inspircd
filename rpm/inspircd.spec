@@ -6,11 +6,11 @@
 
 ## Define conditionals
 ## Change to "without" if needed
-%bcond_without all_plugins
 %bcond_without mysql
 %bcond_without pgsql
 %bcond_without sqlite
 %bcond_without regex_engines
+%bcond_without extras
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
@@ -224,6 +224,7 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 This provides the posix module for inspircd.
 %endif
 
+%if %{with extras}
 %package	extras
 Summary:	Contrib modules for inspircd
 Group:		System Environment/Libraries
@@ -234,6 +235,7 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the extras modules from the inspircd-extras git repo. These modules
 are not directly supported by inspircd.
+%endif
 
 %prep
 %setup -q
@@ -274,6 +276,7 @@ pushd src/modules/
 
 # Extras will be done here as symlinks
 # Start with 3.0 extas not part of 3.0.0 base
+%if %{with extras}
 for x in \
   m_antirandom.cpp \
   m_autodrop.cpp \
@@ -321,6 +324,7 @@ for x in \
   m_xlinetools.cpp ; do
     %{__ln_s} -v ../../%{name}-extras/3.0/$x .
 done
+%endif
 
 popd
 
@@ -369,10 +373,6 @@ popd
 %{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_unitdir}
 %{__install} -m 0644 %{SOURCE1} \
 	${RPM_BUILD_ROOT}%{_unitdir}/inspircd.service
-%else
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_initddir}
-%{__install} -m 0755 %{SOURCE2} ${RPM_BUILD_ROOT}%{_initddir}/%{name}
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_localstatedir}/run/%{name}
 %endif
 
 # development headers
@@ -410,7 +410,7 @@ mv ${RPM_BUILD_ROOT}/%{_datadir}/%{name}/manuals/*.1 ${RPM_BUILD_ROOT}/%{_mandir
 %{_sbindir}/groupadd -r %{name} 2>/dev/null || :
 %{_sbindir}/useradd -r -g %{name} \
 	-s /sbin/nologin -d %{_datadir}/inspircd \
-	-c 'Inspircd Server' inspircd 2>/dev/null || :
+	-c 'InspIRCd Server' inspircd 2>/dev/null || :
 
 %preun
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -469,7 +469,6 @@ fi
 %dir %attr(-,inspircd,inspircd) %{_var}/lib/%{name}
 %dir %{_datadir}/%{name}
 
-# Do I need perms on the symlinks?
 %dir %{_libexecdir}/%{name}
 %dir %{_datadir}/%{name}/bin
 %{_datadir}/%{name}/bin/%{name}
@@ -496,50 +495,50 @@ fi
 %exclude %{_libdir}/%{name}/modules/m_sqlite3.so
 #%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
 # Extras
-#%exclude %{_libdir}/%{name}/modules/m_antirandom.cpp
-#%exclude %{_libdir}/%{name}/modules/m_autodrop.cpp
-#%exclude %{_libdir}/%{name}/modules/m_autokick.cpp
-#%exclude %{_libdir}/%{name}/modules/m_blockhighlight.cpp
-#%exclude %{_libdir}/%{name}/modules/m_blockinvite.cpp
-#%exclude %{_libdir}/%{name}/modules/m_checkbans.cpp
-#%exclude %{_libdir}/%{name}/modules/m_close.cpp
-#%exclude %{_libdir}/%{name}/modules/m_conn_accounts.cpp
-#%exclude %{_libdir}/%{name}/modules/m_conn_banner.cpp
-#%exclude %{_libdir}/%{name}/modules/m_conn_matchident.cpp
-#%exclude %{_libdir}/%{name}/modules/m_conn_require.cpp
-#%exclude %{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
-#%exclude %{_libdir}/%{name}/modules/m_conn_vhost.cpp
-#%exclude %{_libdir}/%{name}/modules/m_custompenalty.cpp
-#%exclude %{_libdir}/%{name}/modules/m_extbanbanlist.cpp
-#%exclude %{_libdir}/%{name}/modules/m_extbanregex.cpp
-#%exclude %{_libdir}/%{name}/modules/m_forceident.cpp
-#%exclude %{_libdir}/%{name}/modules/m_globalmessageflood.cpp
-#%exclude %{_libdir}/%{name}/modules/m_groups.cpp
-#%exclude %{_libdir}/%{name}/modules/m_hideidle.cpp
-#%exclude %{_libdir}/%{name}/modules/m_identmeta.cpp
-#%exclude %{_libdir}/%{name}/modules/m_join0.cpp
-#%exclude %{_libdir}/%{name}/modules/m_joinpartsno.cpp
-#%exclude %{_libdir}/%{name}/modules/m_joinpartspam.cpp
-#%exclude %{_libdir}/%{name}/modules/m_jumpserver.cpp
-#%exclude %{_libdir}/%{name}/modules/m_kill_idle.cpp
-#%exclude %{_libdir}/%{name}/modules/m_messagelength.cpp
-#%exclude %{_libdir}/%{name}/modules/m_namedstats.cpp
-#%exclude %{_libdir}/%{name}/modules/m_nocreate.cpp
-#%exclude %{_libdir}/%{name}/modules/m_noprivatemode.cpp
-#%exclude %{_libdir}/%{name}/modules/m_opmoderated.cpp
-#%exclude %{_libdir}/%{name}/modules/m_qrcode.cpp
-#%exclude %{_libdir}/%{name}/modules/m_randomnotice.cpp
-#%exclude %{_libdir}/%{name}/modules/m_require_auth.cpp
-#%exclude %{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
-#%exclude %{_libdir}/%{name}/modules/m_rotatelog.cpp
-#%exclude %{_libdir}/%{name}/modules/m_shed_users.cpp
-#%exclude %{_libdir}/%{name}/modules/m_slowmode.cpp
-#%exclude %{_libdir}/%{name}/modules/m_solvemsg.cpp
-#%exclude %{_libdir}/%{name}/modules/m_stats_unlinked.cpp
-#%exclude %{_libdir}/%{name}/modules/m_svsoper.cpp
-#%exclude %{_libdir}/%{name}/modules/m_timedstaticquit.cpp
-#%exclude %{_libdir}/%{name}/modules/m_totp.cpp
-#%exclude %{_libdir}/%{name}/modules/m_xlinetools.cpp
+%exclude %{_libdir}/%{name}/modules/m_antirandom.so
+%exclude %{_libdir}/%{name}/modules/m_autodrop.so
+%exclude %{_libdir}/%{name}/modules/m_autokick.so
+%exclude %{_libdir}/%{name}/modules/m_blockhighlight.so
+%exclude %{_libdir}/%{name}/modules/m_blockinvite.so
+%exclude %{_libdir}/%{name}/modules/m_checkbans.so
+%exclude %{_libdir}/%{name}/modules/m_close.so
+%exclude %{_libdir}/%{name}/modules/m_conn_accounts.so
+%exclude %{_libdir}/%{name}/modules/m_conn_banner.so
+%exclude %{_libdir}/%{name}/modules/m_conn_matchident.so
+%exclude %{_libdir}/%{name}/modules/m_conn_require.so
+%exclude %{_libdir}/%{name}/modules/m_conn_strictsasl.so
+%exclude %{_libdir}/%{name}/modules/m_conn_vhost.so
+%exclude %{_libdir}/%{name}/modules/m_custompenalty.so
+%exclude %{_libdir}/%{name}/modules/m_extbanbanlist.so
+%exclude %{_libdir}/%{name}/modules/m_extbanregex.so
+%exclude %{_libdir}/%{name}/modules/m_forceident.so
+%exclude %{_libdir}/%{name}/modules/m_globalmessageflood.so
+%exclude %{_libdir}/%{name}/modules/m_groups.so
+%exclude %{_libdir}/%{name}/modules/m_hideidle.so
+%exclude %{_libdir}/%{name}/modules/m_identmeta.so
+%exclude %{_libdir}/%{name}/modules/m_join0.so
+%exclude %{_libdir}/%{name}/modules/m_joinpartsno.so
+%exclude %{_libdir}/%{name}/modules/m_joinpartspam.so
+%exclude %{_libdir}/%{name}/modules/m_jumpserver.so
+%exclude %{_libdir}/%{name}/modules/m_kill_idle.so
+%exclude %{_libdir}/%{name}/modules/m_messagelength.so
+%exclude %{_libdir}/%{name}/modules/m_namedstats.so
+%exclude %{_libdir}/%{name}/modules/m_nocreate.so
+%exclude %{_libdir}/%{name}/modules/m_noprivatemode.so
+%exclude %{_libdir}/%{name}/modules/m_opmoderated.so
+%exclude %{_libdir}/%{name}/modules/m_qrcode.so
+%exclude %{_libdir}/%{name}/modules/m_randomnotice.so
+%exclude %{_libdir}/%{name}/modules/m_require_auth.so
+%exclude %{_libdir}/%{name}/modules/m_restrictmsg_duration.so
+%exclude %{_libdir}/%{name}/modules/m_rotatelog.so
+%exclude %{_libdir}/%{name}/modules/m_shed_users.so
+%exclude %{_libdir}/%{name}/modules/m_slowmode.so
+%exclude %{_libdir}/%{name}/modules/m_solvemsg.so
+%exclude %{_libdir}/%{name}/modules/m_stats_unlinked.so
+%exclude %{_libdir}/%{name}/modules/m_svsoper.so
+%exclude %{_libdir}/%{name}/modules/m_timedstaticquit.so
+%exclude %{_libdir}/%{name}/modules/m_totp.so
+%exclude %{_libdir}/%{name}/modules/m_xlinetools.so
 
 # OS Specific
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -615,58 +614,59 @@ fi
 %{_libdir}/%{name}/modules/m_sqlite3.so
 %endif
 
-#%files extras
-#%defattr(-, root, root, -)
-#%{_libdir}/%{name}/modules/m_antirandom.cpp
-#%{_libdir}/%{name}/modules/m_autodrop.cpp
-#%{_libdir}/%{name}/modules/m_autokick.cpp
-#%{_libdir}/%{name}/modules/m_blockhighlight.cpp
-#%{_libdir}/%{name}/modules/m_blockinvite.cpp
-#%{_libdir}/%{name}/modules/m_checkbans.cpp
-#%{_libdir}/%{name}/modules/m_close.cpp
-#%{_libdir}/%{name}/modules/m_conn_accounts.cpp
-#%{_libdir}/%{name}/modules/m_conn_banner.cpp
-#%{_libdir}/%{name}/modules/m_conn_matchident.cpp
-#%{_libdir}/%{name}/modules/m_conn_require.cpp
-#%{_libdir}/%{name}/modules/m_conn_strictsasl.cpp
-#%{_libdir}/%{name}/modules/m_conn_vhost.cpp
-#%{_libdir}/%{name}/modules/m_custompenalty.cpp
-#%{_libdir}/%{name}/modules/m_extbanbanlist.cpp
-#%{_libdir}/%{name}/modules/m_extbanregex.cpp
-#%{_libdir}/%{name}/modules/m_forceident.cpp
-#%{_libdir}/%{name}/modules/m_globalmessageflood.cpp
-#%{_libdir}/%{name}/modules/m_groups.cpp
-#%{_libdir}/%{name}/modules/m_hideidle.cpp
-#%{_libdir}/%{name}/modules/m_identmeta.cpp
-#%{_libdir}/%{name}/modules/m_join0.cpp
-#%{_libdir}/%{name}/modules/m_joinpartsno.cpp
-#%{_libdir}/%{name}/modules/m_joinpartspam.cpp
-#%{_libdir}/%{name}/modules/m_jumpserver.cpp
-#%{_libdir}/%{name}/modules/m_kill_idle.cpp
-#%{_libdir}/%{name}/modules/m_messagelength.cpp
-#%{_libdir}/%{name}/modules/m_namedstats.cpp
-#%{_libdir}/%{name}/modules/m_nocreate.cpp
-#%{_libdir}/%{name}/modules/m_noprivatemode.cpp
-#%{_libdir}/%{name}/modules/m_opmoderated.cpp
-#%{_libdir}/%{name}/modules/m_qrcode.cpp
-#%{_libdir}/%{name}/modules/m_randomnotice.cpp
-#%{_libdir}/%{name}/modules/m_require_auth.cpp
-#%{_libdir}/%{name}/modules/m_restrictmsg_duration.cpp
-#%{_libdir}/%{name}/modules/m_rotatelog.cpp
-#%{_libdir}/%{name}/modules/m_shed_users.cpp
-#%{_libdir}/%{name}/modules/m_slowmode.cpp
-#%{_libdir}/%{name}/modules/m_solvemsg.cpp
-#%{_libdir}/%{name}/modules/m_stats_unlinked.cpp
-#%{_libdir}/%{name}/modules/m_svsoper.cpp
-#%{_libdir}/%{name}/modules/m_timedstaticquit.cpp
-#%{_libdir}/%{name}/modules/m_totp.cpp
-#%{_libdir}/%{name}/modules/m_xlinetools.cpp
+%if %{with extras}
+%files extras
+%defattr(-, root, root, -)
+%{_libdir}/%{name}/modules/m_antirandom.so
+%{_libdir}/%{name}/modules/m_autodrop.so
+%{_libdir}/%{name}/modules/m_autokick.so
+%{_libdir}/%{name}/modules/m_blockhighlight.so
+%{_libdir}/%{name}/modules/m_blockinvite.so
+%{_libdir}/%{name}/modules/m_checkbans.so
+%{_libdir}/%{name}/modules/m_close.so
+%{_libdir}/%{name}/modules/m_conn_accounts.so
+%{_libdir}/%{name}/modules/m_conn_banner.so
+%{_libdir}/%{name}/modules/m_conn_matchident.so
+%{_libdir}/%{name}/modules/m_conn_require.so
+%{_libdir}/%{name}/modules/m_conn_strictsasl.so
+%{_libdir}/%{name}/modules/m_conn_vhost.so
+%{_libdir}/%{name}/modules/m_custompenalty.so
+%{_libdir}/%{name}/modules/m_extbanbanlist.so
+%{_libdir}/%{name}/modules/m_extbanregex.so
+%{_libdir}/%{name}/modules/m_forceident.so
+%{_libdir}/%{name}/modules/m_globalmessageflood.so
+%{_libdir}/%{name}/modules/m_groups.so
+%{_libdir}/%{name}/modules/m_hideidle.so
+%{_libdir}/%{name}/modules/m_identmeta.so
+%{_libdir}/%{name}/modules/m_join0.so
+%{_libdir}/%{name}/modules/m_joinpartsno.so
+%{_libdir}/%{name}/modules/m_joinpartspam.so
+%{_libdir}/%{name}/modules/m_jumpserver.so
+%{_libdir}/%{name}/modules/m_kill_idle.so
+%{_libdir}/%{name}/modules/m_messagelength.so
+%{_libdir}/%{name}/modules/m_namedstats.so
+%{_libdir}/%{name}/modules/m_nocreate.so
+%{_libdir}/%{name}/modules/m_noprivatemode.so
+%{_libdir}/%{name}/modules/m_opmoderated.so
+%{_libdir}/%{name}/modules/m_qrcode.so
+%{_libdir}/%{name}/modules/m_randomnotice.so
+%{_libdir}/%{name}/modules/m_require_auth.so
+%{_libdir}/%{name}/modules/m_restrictmsg_duration.so
+%{_libdir}/%{name}/modules/m_rotatelog.so
+%{_libdir}/%{name}/modules/m_shed_users.so
+%{_libdir}/%{name}/modules/m_slowmode.so
+%{_libdir}/%{name}/modules/m_solvemsg.so
+%{_libdir}/%{name}/modules/m_stats_unlinked.so
+%{_libdir}/%{name}/modules/m_svsoper.so
+%{_libdir}/%{name}/modules/m_timedstaticquit.so
+%{_libdir}/%{name}/modules/m_totp.so
+%{_libdir}/%{name}/modules/m_xlinetools.so
+%endif
 
 %changelog
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
 - Rebase to 3.0.0
-- Removed symlinked modules that are already built in to 3.x
-- Removed all current extras for now
+- Removed modules that are already part of 3.x
 - 2.0 modules no longer compiled
 - Removed upstream systemd unit
 - Moved manual pages
