@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 3
 %global minor_version 0
-%global micro_version 0
+%global micro_version 1
 
 ## Define conditionals
 ## Change to "without" if needed
@@ -664,6 +664,9 @@ fi
 %endif
 
 %changelog
+* Mon May 13 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.1-1
+- Update to 3.0.1
+
 * Thu May 09 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.0-1
 - Rebase to 3.0.0
 - Removed modules that are already part of 3.x

@@ -48,7 +48,7 @@ Yes, I do.
 Did you make any changes to the code?
 +++++++++++++++++++++++++++++++++++++
 
-Patches were added only for the default configuration.
+No changes to the code.
 
 So what did you change?
 +++++++++++++++++++++++
