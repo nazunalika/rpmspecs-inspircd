@@ -1,8 +1,8 @@
 ## Define global settings
 %global _hardened_build 1
 %global major_version 3
-%global minor_version 0
-%global micro_version 1
+%global minor_version 1
+%global micro_version 0
 
 ## Define conditionals
 ## Change to "without" if needed
@@ -664,6 +664,9 @@ fi
 %endif
 
 %changelog
+* Wed May 22 2019 Louis Abel <tucklesepk@gmail.com> - 3.1.0-1
+- Update to 3.1.0
+
 * Mon May 13 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.1-1
 - Update to 3.0.1
 
