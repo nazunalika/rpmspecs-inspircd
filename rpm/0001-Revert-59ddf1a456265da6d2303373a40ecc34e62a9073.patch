@@ -1,0 +1,145 @@
+From 76367f66b1a49dd71c91165d1edee4d9bd3e9774 Mon Sep 17 00:00:00 2001
+From: Tommy Nguyen <remyabel@gmail.com>
+Date: Wed, 5 Jun 2019 23:27:06 -0400
+Subject: [PATCH 1/2] Revert 59ddf1a456265da6d2303373a40ecc34e62a9073
+
+---
+ configure             | 28 -------------------
+ make/template/main.mk | 64 +++++++++++++++++++++++++------------------
+ 2 files changed, 37 insertions(+), 55 deletions(-)
+
+diff --git a/configure b/configure
+index e2e0828a2..dbee51189 100755
+--- a/configure
++++ b/configure
+@@ -210,20 +210,6 @@ if (defined $opt_gid) {
+ } else {
+ 	@group = $opt_system ? getgrnam('irc') : getgrgid($config{GID} // getgid());
+ 	print_error "you need to specify a group to run as using '--gid [id|name]'!" unless @group;
+-	unless ($group[2]) {
+-		print_warning <<"EOW";
+-You are building as the privileged $group[0] group and have not specified
+-an unprivileged group to run InspIRCd as.
+-
+-This is almost never what you should do. You should probably either create a new
+-unprivileged user/group to build and run as or pass the '--gid [id|name]' flag
+-to specify an unprivileged group to run as.
+-EOW
+-		if (!prompt_bool $interactive, "Are you sure you want to build as the $group[0] group?", 0) {
+-			say STDERR "If you are sure you want to build as the $group[0] group pass the --gid $group[2] flag." unless $interactive;
+-			exit 1;
+-		}
+-	}
+ }
+ $config{GROUP} = $group[0];
+ $config{GID}   = $group[2];
+@@ -236,20 +222,6 @@ if (defined $opt_uid) {
+ } else {
+ 	@user = $opt_system ? getpwnam('irc') : getpwuid($config{UID} // getuid());
+ 	print_error "you need to specify a user to run as using '--uid [id|name]'!" unless @user;
+-	unless ($user[2]) {
+-		print_warning <<"EOW";
+-You are building as the privileged $user[0] user and have not specified
+-an unprivileged user to run InspIRCd as.
+-
+-This is almost never what you should do. You should probably either create a new
+-unprivileged user/group to build and run as or pass the '--uid [id|name]' flag
+-to specify an unprivileged user to run as.
+-EOW
+-		if (!prompt_bool $interactive, "Are you sure you want to build as the $user[0] user?", 0) {
+-			say STDERR "If you are sure you want to build as the $user[0] user pass the --uid $user[2] flag." unless $interactive;
+-			exit 1;
+-		}
+-	}
+ }
+ $config{USER} = $user[0];
+ $config{UID}  = $user[2];
+diff --git a/make/template/main.mk b/make/template/main.mk
+index e39a24f87..7d7f3edf8 100644
+--- a/make/template/main.mk
++++ b/make/template/main.mk
+@@ -46,11 +46,11 @@ LOGPATH = "$(DESTDIR)@LOG_DIR@"
+ DATPATH = "$(DESTDIR)@DATA_DIR@"
+ BINPATH = "$(DESTDIR)@BINARY_DIR@"
+ SCRPATH = "$(DESTDIR)@SCRIPT_DIR@"
+-INSTALL ?= install
+-INSTMODE_DIR ?= 0755
+-INSTMODE_BIN ?= 0755
+-INSTMODE_TXT ?= 0644
+-INSTMODE_PRV ?= 0640
++INSTALL = install
++INSTUID = @UID@
++INSTMODE_DIR = 0750
++INSTMODE_BIN = 0750
++INSTMODE_LIB = 0640
+ 
+ ifneq ($(COMPILER), ICC)
+   CORECXXFLAGS += -Woverloaded-virtual -Wshadow
+@@ -203,32 +203,42 @@ finishmessage: target
+ 	@echo "*************************************"
+ 
+ install: target
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(BASE)
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(DATPATH)
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(LOGPATH)
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(BINPATH)
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(CONPATH)/examples/services
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(CONPATH)/examples/sql
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(MANPATH)
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(MODPATH)
+-	@-$(INSTALL) -d -g @GID@ -o @UID@ -m $(INSTMODE_DIR) $(SCRPATH)
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_BIN) "$(BUILDPATH)/bin/inspircd" $(BINPATH)
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_BIN) "$(BUILDPATH)/modules/"*.so $(MODPATH)
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_BIN) @CONFIGURE_DIRECTORY@/inspircd $(SCRPATH) 2>/dev/null
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) .gdbargs $(SCRPATH)/.gdbargs 2>/dev/null
++	@if [ "$(INSTUID)" = 0 -o "$(INSTUID)" = root ]; then \
++		echo ""; \
++		echo "Error: You must specify a non-root UID for the server"; \
++		echo ""; \
++		echo "If you are making a package, please specify using ./configure --uid"; \
++		echo "Otherwise, rerun using 'make INSTUID=irc install', where 'irc' is the user"; \
++		echo "who will be running the ircd. You will also need to modify the start script."; \
++		echo ""; \
++		exit 1; \
++	fi
++	@-$(INSTALL) -d -o $(INSTUID) -m $(INSTMODE_DIR) $(BASE)
++	@-$(INSTALL) -d -o $(INSTUID) -m $(INSTMODE_DIR) $(DATPATH)
++	@-$(INSTALL) -d -o $(INSTUID) -m $(INSTMODE_DIR) $(LOGPATH)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(BINPATH)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(CONPATH)/examples/services
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(CONPATH)/examples/sql
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(MANPATH)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(MODPATH)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(SCRPATH)
++	[ "$(BUILDPATH)/bin/" -ef $(BINPATH) ] || $(INSTALL) -m $(INSTMODE_BIN) "$(BUILDPATH)/bin/inspircd" $(BINPATH)
++	[ "$(BUILDPATH)/modules/" -ef $(MODPATH) ] || $(INSTALL) -m $(INSTMODE_LIB) "$(BUILDPATH)/modules/"*.so $(MODPATH)
++	-$(INSTALL) -m $(INSTMODE_BIN) @CONFIGURE_DIRECTORY@/inspircd $(SCRPATH) 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_LIB) .gdbargs $(SCRPATH)/.gdbargs 2>/dev/null
+ ifeq ($(SYSTEM), darwin)
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_BIN) @CONFIGURE_DIRECTORY@/org.inspircd.plist $(SCRPATH) 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_BIN) @CONFIGURE_DIRECTORY@/org.inspircd.plist $(SCRPATH) 2>/dev/null
+ endif
+ ifeq ($(SYSTEM), linux)
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) @CONFIGURE_DIRECTORY@/inspircd.service $(SCRPATH) 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_LIB) @CONFIGURE_DIRECTORY@/inspircd.service $(SCRPATH) 2>/dev/null
+ endif
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) @CONFIGURE_DIRECTORY@/inspircd.1 $(MANPATH) 2>/dev/null
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) @CONFIGURE_DIRECTORY@/inspircd-genssl.1 $(MANPATH) 2>/dev/null
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_BIN) tools/genssl $(BINPATH)/inspircd-genssl 2>/dev/null
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) docs/conf/*.example $(CONPATH)/examples
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) docs/conf/services/*.example $(CONPATH)/examples/services
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_TXT) docs/sql/*.sql $(CONPATH)/examples/sql
+-	-$(INSTALL) -g @GID@ -o @UID@ -m $(INSTMODE_PRV) *.pem $(CONPATH) 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_LIB) @CONFIGURE_DIRECTORY@/inspircd.1 $(MANPATH) 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_LIB) @CONFIGURE_DIRECTORY@/inspircd-genssl.1 $(MANPATH) 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_BIN) tools/genssl $(BINPATH)/inspircd-genssl 2>/dev/null
++	-$(INSTALL) -m $(INSTMODE_LIB) docs/conf/*.example $(CONPATH)/examples
++	-$(INSTALL) -m $(INSTMODE_LIB) docs/conf/services/*.example $(CONPATH)/examples/services
++	-$(INSTALL) -m $(INSTMODE_LIB) docs/sql/*.sql $(CONPATH)/examples/sql
++	-$(INSTALL) -m $(INSTMODE_LIB) *.pem $(CONPATH) 2>/dev/null
+ 	@echo ""
+ 	@echo "*************************************"
+ 	@echo "*        INSTALL COMPLETE!          *"
+-- 
+2.21.0
+

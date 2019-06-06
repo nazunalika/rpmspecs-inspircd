@@ -1,0 +1,121 @@
+From 7949c757b99b33910d8b04d5b1314e359579d027 Mon Sep 17 00:00:00 2001
+From: Tommy Nguyen <remyabel@gmail.com>
+Date: Wed, 5 Jun 2019 23:30:13 -0400
+Subject: [PATCH 2/2] Remove more GID/UID stuff
+
+---
+ configure              | 26 --------------------------
+ make/template/inspircd | 17 -----------------
+ make/template/main.mk  | 17 +++--------------
+ 3 files changed, 3 insertions(+), 57 deletions(-)
+
+diff --git a/configure b/configure
+index dbee51189..181eb4f0d 100755
+--- a/configure
++++ b/configure
+@@ -202,30 +202,6 @@ if (defined $opt_system) {
+ 	$config{SCRIPT_DIR} = $opt_script_dir // $config{SCRIPT_DIR} // $config{BASE_DIR};
+ }
+ 
+-# Parse --gid=123 or --gid=foo and extract the group id.
+-my @group;
+-if (defined $opt_gid) {
+-	@group = $opt_gid =~ /^\d+$/ ? getgrgid($opt_gid) : getgrnam($opt_gid);
+-	print_error "there is no '$opt_gid' group on this system!" unless @group;
+-} else {
+-	@group = $opt_system ? getgrnam('irc') : getgrgid($config{GID} // getgid());
+-	print_error "you need to specify a group to run as using '--gid [id|name]'!" unless @group;
+-}
+-$config{GROUP} = $group[0];
+-$config{GID}   = $group[2];
+-
+-# Parse --uid=123 or --uid=foo and extract the user id.
+-my @user;
+-if (defined $opt_uid) {
+-	@user = $opt_uid =~ /^\d+$/ ? getpwuid($opt_uid) : getpwnam($opt_uid);
+-	print_error "there is no '$opt_uid' user on this system!" unless @user;
+-} else {
+-	@user = $opt_system ? getpwnam('irc') : getpwuid($config{UID} // getuid());
+-	print_error "you need to specify a user to run as using '--uid [id|name]'!" unless @user;
+-}
+-$config{USER} = $user[0];
+-$config{UID}  = $user[2];
+-
+ # Warn the user about clock drifting when running on OpenVZ.
+ if (-e '/proc/user_beancounters' || -e '/proc/vz/vzaquota') {
+ 	print_warning <<'EOW';
+@@ -368,8 +344,6 @@ print_format <<"EOM";
+   <|GREEN Module:|> $config{MODULE_DIR}
+   <|GREEN Script:|> $config{SCRIPT_DIR}
+ 
+-<|GREEN Execution Group:|> $config{GROUP} ($config{GID})
+-<|GREEN Execution User:|>  $config{USER} ($config{UID})
+ <|GREEN Socket Engine:|>   $config{SOCKETENGINE}
+ 
+ To build with these settings run '<|GREEN make -j${\get_cpu_count} install|>' now.
+diff --git a/make/template/inspircd b/make/template/inspircd
+index 91b269412..227200bcc 100644
+--- a/make/template/inspircd
++++ b/make/template/inspircd
+@@ -57,23 +57,6 @@ my $datadir	=       "@DATA_DIR@";
+ my $valgrindlogpath	=	"$basepath/valgrindlogs";
+ my $executable	=	"inspircd";
+ my $version	=	"@VERSION_FULL@";
+-my $uid = "@UID@";
+-
+-if (!(grep { $_ eq '--runasroot' } @ARGV) && ($< == 0 || $> == 0)) {
+-	if ($uid !~ /^\d+$/) {
+-		# Named UID, look it up
+-		$uid = getpwnam $uid;
+-	}
+-	if (!$uid) {
+-		die "Cannot find a valid UID to change to";
+-	}
+-	# drop root if we were configured with an ircd UID
+-	$< = $uid;
+-	$> = $uid;
+-	if ($< == 0 || $> == 0) {
+-		die "Could not drop root: $!";
+-	}
+-}
+ 
+ our($pid,$pidfile);
+ # Lets see what they want to do.. Set the variable (Cause i'm a lazy coder)
+diff --git a/make/template/main.mk b/make/template/main.mk
+index 7d7f3edf8..8d2548a7a 100644
+--- a/make/template/main.mk
++++ b/make/template/main.mk
+@@ -47,7 +47,6 @@ DATPATH = "$(DESTDIR)@DATA_DIR@"
+ BINPATH = "$(DESTDIR)@BINARY_DIR@"
+ SCRPATH = "$(DESTDIR)@SCRIPT_DIR@"
+ INSTALL = install
+-INSTUID = @UID@
+ INSTMODE_DIR = 0750
+ INSTMODE_BIN = 0750
+ INSTMODE_LIB = 0640
+@@ -203,19 +202,9 @@ finishmessage: target
+ 	@echo "*************************************"
+ 
+ install: target
+-	@if [ "$(INSTUID)" = 0 -o "$(INSTUID)" = root ]; then \
+-		echo ""; \
+-		echo "Error: You must specify a non-root UID for the server"; \
+-		echo ""; \
+-		echo "If you are making a package, please specify using ./configure --uid"; \
+-		echo "Otherwise, rerun using 'make INSTUID=irc install', where 'irc' is the user"; \
+-		echo "who will be running the ircd. You will also need to modify the start script."; \
+-		echo ""; \
+-		exit 1; \
+-	fi
+-	@-$(INSTALL) -d -o $(INSTUID) -m $(INSTMODE_DIR) $(BASE)
+-	@-$(INSTALL) -d -o $(INSTUID) -m $(INSTMODE_DIR) $(DATPATH)
+-	@-$(INSTALL) -d -o $(INSTUID) -m $(INSTMODE_DIR) $(LOGPATH)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(BASE)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(DATPATH)
++	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(LOGPATH)
+ 	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(BINPATH)
+ 	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(CONPATH)/examples/services
+ 	@-$(INSTALL) -d -m $(INSTMODE_DIR) $(CONPATH)/examples/sql
+-- 
+2.21.0
+

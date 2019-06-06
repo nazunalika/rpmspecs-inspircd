@@ -31,6 +31,9 @@ Source9:	%{name}.modules
 Source10:	%{name}.opers
 Source11:	%{name}.motd.fedora
 
+Patch1:		0001-Revert-59ddf1a456265da6d2303373a40ecc34e62a9073.patch
+Patch2:		0002-Remove-more-GID-UID-stuff.patch
+
 Provides:	%{name} = %{version}-%{release}
 Provides:	%{name}3
 
@@ -239,6 +242,7 @@ are not directly supported by inspircd.
 
 %prep
 %setup -q
+%patch -P 1 -P 2 -p1
 
 ## Enable all extras EXCEPT mssql and stdlib
 ## Doing symlinks instead of calling the configure script
@@ -331,17 +335,16 @@ popd
 %build
 
 # We're no longer supported :(
-%configure --disable-interactive \
-	--enable-openssl \
-	--enable-gnutls \
+./configure --disable-interactive \
 	--prefix=%{_datadir}/%{name} \
 	--module-dir=%{_libdir}/%{name}/modules \
 	--config-dir=%{_sysconfdir}/%{name} \
 	--binary-dir=%{_sbindir} \
 	--data-dir=%{_sharedstatedir}/%{name} \
 	--log-dir=%{_var}/log/%{name} \
-	--enable-epoll \
-	--disable-kqueue
+	--manual-dir=%{_mandir}/man1 \
+	--socketengine=epoll \
+	--system
 
 make %{?_smp_mflags}
 
@@ -399,9 +402,8 @@ popd
 %{__install} -m 0660 %{SOURCE11} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.motd
 %endif
 
-# Man pages
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}/%{_mandir}/man1
-mv ${RPM_BUILD_ROOT}/%{_datadir}/%{name}/manuals/*.1 ${RPM_BUILD_ROOT}/%{_mandir}/man1
+# Log directory
+%{__install} -d -m 0700 ${RPM_BUILD_ROOT}%{_var}/log/%{name}
 
 %pre
 # Since we are not an official Fedora build, we don't get an
@@ -483,7 +485,7 @@ fi
 # Removing their custom 'service' - At some point I will open a PR
 # to change their unit to be better supported under systemd
 %exclude %{_datadir}/%{name}/inspircd.service
-%exclude %dir %{_datadir}/%{name}/manuals
+%exclude %dir %{_datadir}/man
 # Modules
 %exclude %{_libdir}/%{name}/modules/m_ssl_gnutls.so
 %exclude %{_libdir}/%{name}/modules/m_ssl_openssl.so
@@ -664,8 +666,9 @@ fi
 %endif
 
 %changelog
-* Wed May 22 2019 Louis Abel <tucklesepk@gmail.com> - 3.1.0-1
+* Wed Jun 05 2019 Louis Abel <tucklesepk@gmail.com> - 3.1.0-1
 - Update to 3.1.0
+- Added patches to revert changes that prevented the build
 
 * Mon May 13 2019 Louis Abel <tucklesepk@gmail.com> - 3.0.1-1
 - Update to 3.0.1
