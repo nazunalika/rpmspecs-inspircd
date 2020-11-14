@@ -33,7 +33,7 @@ BuildRequires:	perl
 BuildRequires:	perl(File::Copy)
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
-BuildRequires:	perl(Crypt::SSLeay)
+#BuildRequires:	perl(Crypt::SSLeay)
 BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
 BuildRequires:	make
