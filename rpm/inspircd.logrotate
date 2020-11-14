@@ -1,12 +1,17 @@
-/var/log/inspircd/inspircd.log {
-        weekly
-	notifempty
-        missingok
-        create 0600 inspircd inspircd
-        rotate 7
+# This is a copr provided logrotate. The build provides their own logrotate
+# that functions similar to this but provides extras that do not pertain to us
+/var/log/inspircd/* {
         compress
+        create 0600 inspircd inspircd
+        dataext
         delaycompress
+        missingok
+	notifempty
+        rotate 7
+        weekly
         postrotate
-		/sbin/service inspircd reload
+                if /bin/systemctl --quiet is-active inspircd; then
+		    /bin/systemctl reload inspircd
+                fi
 	endscript
 }

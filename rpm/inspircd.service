@@ -8,14 +8,18 @@
 
 [Unit]
 Description=InspIRCd - Internet Relay Chat Daemon
+Documentation=https://docs.inspircd.org
 After=network.target
-Requires=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
 User=inspircd
-ExecStart=/usr/sbin/inspircd --nofork
+Group=inspircd
+ExecStart=/usr/sbin/inspircd --nofork --nopid
 ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
 PrivateTmp=true
 
 [Install]

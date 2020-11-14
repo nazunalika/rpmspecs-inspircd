@@ -1,16 +1,12 @@
 ## Define global settings
 %global _hardened_build 1
 %global major_version 3
-%global minor_version 1
+%global minor_version 8
 %global micro_version 0
 
 ## Define conditionals
 ## Change to "without" if needed
-%bcond_without mysql
-%bcond_without pgsql
-%bcond_without sqlite
-%bcond_without regex_engines
-%bcond_without extras
+%bcond_without contrib
 
 Name:		inspircd
 Version:	%{major_version}.%{minor_version}.%{micro_version}
@@ -24,37 +20,42 @@ Source0:	https://github.com/inspircd/inspircd/archive/v%{version}.tar.gz
 Source1:	%{name}.service
 Source3:	%{name}.logrotate
 Source4:	%{name}.README
-Source6:	%{name}.conf
 Source7:	%{name}.motd.centos
 Source8:	%{name}.rules
-Source9:	%{name}.modules
-Source10:	%{name}.opers
 Source11:	%{name}.motd.fedora
 
-Patch1:		0001-Revert-59ddf1a456265da6d2303373a40ecc34e62a9073.patch
-Patch2:		0002-Remove-more-GID-UID-stuff.patch
+Patch1:		0001-change-readme.patch
 
 Provides:	%{name} = %{version}-%{release}
 Provides:	%{name}3
 
+BuildRequires:	perl
+BuildRequires:	perl(File::Copy)
 BuildRequires:	perl(LWP::Simple)
 BuildRequires:	perl(LWP::Protocol::https)
 BuildRequires:	perl(Crypt::SSLeay)
 BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
+BuildRequires:	make
 BuildRequires:	gcc
 BuildRequires:	gcc-c++
-BuildRequires:	openssl-devel
 BuildRequires:	tre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	pkgconfig(sqlite3)
-#BuildRequires:	libmaxminddb-devel
 BuildRequires:	openldap-devel
 BuildRequires:	pcre-devel
-#BuildRequires:	re2-devel
 BuildRequires:	qrencode-devel
-BuildRequires:	gnutls-devel
 BuildRequires:	git
+BuildRequires:	libmaxminddb-devel
+BuildRequires:	re2-devel
+
+# Default modules
+BuildRequires:	openssl-devel
+BuildRequires:	gnutls-devel
+
+# I noticed that calling this in any current RHEL pulls whatever is "natural"
+# could be mariadb-devel or mysql-devel. Who knows.
+BuildRequires:	mysql-devel
 
 ## As far as I'm aware, the other packages can be installed
 ## when the modules are enabled. This is mentioned in the
@@ -64,17 +65,16 @@ BuildRequires:	git
 Requires:	openssl
 Requires:	perl(Getopt::Long)
 
-# OS Specific Requirements
-%if 0%{?fedora} || 0%{?rhel} >= 7
+# Universal requirements
 BuildRequires:	systemd
-BuildRequires:	mariadb-devel
 Requires(post):	systemd
 Requires(preun): systemd
 Requires(postun): systemd
 Requires:	systemd
-%else
-BuildRequires:	mysql-devel
-Requires:	initscripts
+
+# OS Specific Requirements
+%if 0%{?fedora} > 30
+BuildRequires: systemd-rpm-macros
 %endif
 
 %description
@@ -128,7 +128,6 @@ Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 This provides the gnutls module for inspircd. It is recommended to install this
 module to allow secure connections to your irc server.
 
-%if %{with sqlite}
 %package	modules-sqlite3
 Summary:	SQLite 3 Backend Module for Inspircd
 Group:		System Environment/Libraries
@@ -139,9 +138,7 @@ Requires:	sqlite-libs
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the sqlite3 module for inspircd.
-%endif
 
-%if %{with mysql}
 %package	modules-mysql
 Summary:	MySQL Backend Module for Inspircd
 Group:		System Environment/Libraries
@@ -152,9 +149,7 @@ Requires:	mysql-libs
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the mysql module for inspircd.
-%endif
 
-%if %{with pgsql}
 %package	modules-postgresql
 Summary:	Postgresql Backend Module for Inspircd
 Group:		System Environment/Libraries
@@ -165,9 +160,7 @@ Requires:	postgresql-libs
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the postgresql module for inspircd.
-%endif
 
-%if %{with ldap}
 %package	modules-ldap
 Summary:	LDAP Backend Module for Inspircd
 Group:		System Environment/Libraries
@@ -178,9 +171,7 @@ Requires:	openldap
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the ldap module for inspircd.
-%endif
 
-%if %{with geomaxmind}
 %package        modules-geomaxmind
 Summary:	GeoIP Backend Module for Inspircd
 Group:		System Environment/Libraries
@@ -191,162 +182,51 @@ Requires:	libmaxminddb
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
 This provides the geomaxmind module for inspircd.
-%endif
 
-%if %{with regex_engines}
-%package        modules-pcre
-Summary:	pcre Regex Module for Inspircd
-Group:		System Environment/Libraries
-Requires:	inspircd = %{version}-%{release}
-Requires:	pcre
-
-%description    modules-pcre
-Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
-
-This provides the pcre module for inspircd.
-
-%package        modules-tre
-Summary:	Tre Regex Module for Inspircd
-Group:		System Environment/Libraries
-Requires:	inspircd = %{version}-%{release}
-Requires:	tre
-
-%description    modules-tre
-Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
-
-This provides the tre module for inspircd.
-
-%package        modules-posix
-Summary:	POSIX Regex Module for Inspircd
-Group:		System Environment/Libraries
-Requires:	inspircd = %{version}-%{release}
-
-%description    modules-posix
-Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
-
-This provides the posix module for inspircd.
-%endif
-
-%if %{with extras}
-%package	extras
+%if %{with contrib}
+%package	contrib
 Summary:	Contrib modules for inspircd
 Group:		System Environment/Libraries
 Requires:	inspircd = %{version}-%{release}
 
-%description	extras
+%description	contrib
 Inspircd is a modular Internet Relay Chat (IRC) server written in C++ for Linux.
 
-This provides the extras modules from the inspircd-extras git repo. These modules
+This provides the contrib modules from the inspircd-contrib git repo. These modules
 are not directly supported by inspircd.
 %endif
 
 %prep
 %setup -q
-%patch -P 1 -P 2 -p1
+%patch -P 1 -p1
 
-## Enable all extras EXCEPT mssql and stdlib
-## Doing symlinks instead of calling the configure script
-
-# Clone extras first - the extras don't have a 'release'
-git clone https://github.com/inspircd/inspircd-extras.git
-
-pushd src/modules/
-
-%if %{with mysql}
-%{__ln_s} -v extra/m_mysql.cpp .
-%endif
-
-%if %{with pgsql}
-%{__ln_s} -v extra/m_pgsql.cpp .
-%endif
-
-%if %{with sqlite}
-%{__ln_s} -v extra/m_sqlite3.cpp .
-%endif
-
-%if %{with geomaxmind}
-%{__ln_s} -v extra/m_geomaxmind.cpp .
-%endif
-
-%if %{with regex_engines}
-%{__ln_s} -v extra/m_regex_pcre.cpp .
-%{__ln_s} -v extra/m_regex_posix.cpp .
-%{__ln_s} -v extra/m_regex_tre.cpp .
-%endif
-
-%{__ln_s} -v extra/m_ssl_openssl.cpp .
-%{__ln_s} -v extra/m_sslrehashsignal.cpp .
-%{__ln_s} -v extra/m_ssl_gnutls.cpp .
-
-# Extras will be done here as symlinks
-# Start with 3.0 extas not part of 3.0.0 base
-%if %{with extras}
-for x in \
-  m_antirandom.cpp \
-  m_autodrop.cpp \
-  m_autokick.cpp \
-  m_blockhighlight.cpp \
-  m_blockinvite.cpp \
-  m_checkbans.cpp \
-  m_close.cpp \
-  m_conn_accounts.cpp \
-  m_conn_banner.cpp \
-  m_conn_matchident.cpp \
-  m_conn_require.cpp \
-  m_conn_strictsasl.cpp \
-  m_conn_vhost.cpp \
-  m_custompenalty.cpp \
-  m_extbanbanlist.cpp \
-  m_extbanregex.cpp \
-  m_forceident.cpp \
-  m_globalmessageflood.cpp \
-  m_groups.cpp \
-  m_hideidle.cpp \
-  m_identmeta.cpp \
-  m_join0.cpp \
-  m_joinpartsno.cpp \
-  m_joinpartspam.cpp \
-  m_jumpserver.cpp \
-  m_kill_idle.cpp \
-  m_messagelength.cpp \
-  m_namedstats.cpp \
-  m_nocreate.cpp \
-  m_noprivatemode.cpp \
-  m_opmoderated.cpp \
-  m_qrcode.cpp \
-  m_randomnotice.cpp \
-  m_require_auth.cpp \
-  m_restrictmsg_duration.cpp \
-  m_rotatelog.cpp \
-  m_shed_users.cpp \
-  m_slowmode.cpp \
-  m_solvemsg.cpp \
-  m_stats_unlinked.cpp \
-  m_svsoper.cpp \
-  m_timedstaticquit.cpp \
-  m_totp.cpp \
-  m_xlinetools.cpp ; do
-    %{__ln_s} -v ../../%{name}-extras/3.0/$x .
+# Using module manager to install extras...
+%if %{with contrib}
+for x in $(./modulemanager list | awk '{print $1}') ; do
+  ./modulemanager install $x
 done
 %endif
 
-popd
-
 %build
-
 # We're no longer supported :(
+./configure --enable-extras=m_mysql.cpp,m_pgsql.cpp,m_sqlite3.cpp,m_geo_maxmind.cpp,m_regex_pcre.cpp,m_regex_posix.cpp,m_regex_tre.cpp,m_regex_re2.cpp,m_regex_stdlib.cpp,m_ssl_openssl.cpp,m_sslrehashsignal.cpp,m_ssl_gnutls.cpp
+
 ./configure --disable-interactive \
+	--disable-auto-extras \
+	--distribution-label %{dist} \
 	--prefix=%{_datadir}/%{name} \
 	--module-dir=%{_libdir}/%{name}/modules \
 	--config-dir=%{_sysconfdir}/%{name} \
 	--binary-dir=%{_sbindir} \
 	--data-dir=%{_sharedstatedir}/%{name} \
-	--log-dir=%{_var}/log/%{name} \
-	--manual-dir=%{_mandir}/man1 \
-	--socketengine=epoll \
-	--system
+	--log-dir=%{_localstatedir}/log/%{name} \
+	--example-dir=%{_docdir}/%{name}-%{version}/examples \
+	--system \
+	--uid $(id -u) \
+	--gid $(id -g)
 
-make %{?_smp_mflags}
+# have to disable rpath, otherwise problems occur
+INSPIRCD_DISABLE_RPATH=1 make %{?_smp_mflags}
 
 # Extra documentation
 cp %{SOURCE4} %{_builddir}/%{name}-%{version}/README.info
@@ -357,8 +237,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__mkdir} -p ${RPM_BUILD_ROOT}/%{_libexecdir}/%{name}
 
-%{__mkdir} -p ${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d
-%{__install} -m 0644 %{SOURCE3} \
+%{__install} -pD -m 0644 %{SOURCE3} \
 	${RPM_BUILD_ROOT}%{_sysconfdir}/logrotate.d/%{name}
 
 # Symlinks in our home directory
@@ -366,34 +245,26 @@ pushd ${RPM_BUILD_ROOT}%{_datadir}/%{name}
 	%{__mkdir} bin
 	%{__mv} inspircd bin
 	%{__ln_s} %{_sysconfdir}/%{name} conf
-	%{__ln_s} %{_var}/log/%{name} logs
+	%{__ln_s} %{_localstatedir}/log/%{name} logs
 	%{__ln_s} %{_libdir}/%{name}/modules modules
 	%{__ln_s} %{_sharedstatedir}/%{name} data
 popd
 
-# OS Specific
-%if 0%{?fedora} || 0%{?rhel} >= 7
-%{__install} -d -m 0755 ${RPM_BUILD_ROOT}%{_unitdir}
-%{__install} -m 0644 %{SOURCE1} \
+# systemd
+%{__install} -pD -m 0644 %{SOURCE1} \
 	${RPM_BUILD_ROOT}%{_unitdir}/inspircd.service
-%endif
 
 # development headers
-%{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{commands,modules,threadengines}
+%{__mkdir} -p ${RPM_BUILD_ROOT}/%{_includedir}/%{name}/{modules,threadengines}
 %{__install} -m 0644 include/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}
-%{__install} -m 0644 include/commands/*.h \
-	${RPM_BUILD_ROOT}%{_includedir}/%{name}/commands
 %{__install} -m 0644 include/modules/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}/modules
 %{__install} -m 0644 include/threadengines/*.h \
 	${RPM_BUILD_ROOT}%{_includedir}/%{name}/threadengines
 
 # default configurations
-%{__install} -m 0660 %{SOURCE6} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.conf
 %{__install} -m 0660 %{SOURCE8} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.rules
-%{__install} -m 0660 %{SOURCE9} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.modules
-%{__install} -m 0660 %{SOURCE10} ${RPM_BUILD_ROOT}/%{_sysconfdir}/%{name}/%{name}.opers
 
 # We only plan on building for Enterprise Linux and Fedora
 %if 0%{?rhel}
@@ -403,7 +274,10 @@ popd
 %endif
 
 # Log directory
-%{__install} -d -m 0700 ${RPM_BUILD_ROOT}%{_var}/log/%{name}
+%{__install} -d -m 0700 ${RPM_BUILD_ROOT}%{_localstatedir}/log/%{name}
+
+# Remove some things
+rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 
 %pre
 # Since we are not an official Fedora build, we don't get an
@@ -412,63 +286,38 @@ popd
 %{_sbindir}/groupadd -r %{name} 2>/dev/null || :
 %{_sbindir}/useradd -r -g %{name} \
 	-s /sbin/nologin -d %{_datadir}/inspircd \
-	-c 'InspIRCd Server' inspircd 2>/dev/null || :
+	-c 'InspIRCd Service User' inspircd 2>/dev/null || :
 
 %preun
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_preun %{name}.service
-%else
-if [ $1 = 0 ]; then
-	[ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} stop
-	[ -f %{_initddir}/%{name} ] && chkconfig --del %{name}
-fi
-%endif
 
 %post
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_post %{name}.service
-%else
-/sbin/chkconfig --add %{name}
-%endif
 
 %postun
-%if 0%{?fedora} || 0%{?rhel} >= 7
 %systemd_postun_with_restart %{name}.service
-%else
-if [ "$1" -ge "1" ]; then
-	[ -f /var/lock/subsys/%{name} ] && /sbin/service %{name} restart >/dev/null 2>&1
-fi
-%endif
 
 %files
 %defattr(-, root, root, -)
 %doc docs/LICENSE.txt docs/Doxyfile docs/sql/* README.md README.info
+%doc %{_mandir}/man1/*
+%doc %{_docdir}/%{name}-%{version}/examples
 
-%{_sbindir}/%{name}
-%{_sbindir}/%{name}-genssl
+# Needs capabilities
+%attr(754, %{name}, %{name}) %caps(CAP_NET_BIND_SERVICE=ep) %{_sbindir}/%{name}
+%{_sbindir}/%{name}-testssl
+
 %dir %attr(0750,root,inspircd) %{_sysconfdir}/%{name}
-%dir %{_sysconfdir}/%{name}/examples
-%{_sysconfdir}/%{name}/examples/*.example
-%dir %{_sysconfdir}/%{name}/examples/services
-%{_sysconfdir}/%{name}/examples/services/*.example
-%dir %{_sysconfdir}/%{name}/examples/sql
-%{_sysconfdir}/%{name}/examples/sql/*.sql
-
-%{_mandir}/man1/inspircd-genssl.1*
-%{_mandir}/man1/inspircd.1*
-
+%attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/help.txt
 # Default configurations
-%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.conf
 %config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.motd
 %config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.rules
-%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.opers
-%config(noreplace) %attr(-,inspircd,inspircd) %{_sysconfdir}/%{name}/%{name}.modules
 
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/modules
-%{_libdir}/%{name}/modules/*
-%dir %attr(0700,inspircd,inspircd) %{_var}/log/%{name}
-%dir %attr(-,inspircd,inspircd) %{_var}/lib/%{name}
+%{_libdir}/%{name}/modules/*.so
+%dir %attr(0700,inspircd,inspircd) %{_localstatedir}/log/%{name}
+%dir %attr(-,inspircd,inspircd) %{_localstatedir}/lib/%{name}
 %dir %{_datadir}/%{name}
 
 %dir %{_libexecdir}/%{name}
@@ -478,44 +327,52 @@ fi
 %{_datadir}/%{name}/logs
 %{_datadir}/%{name}/data
 %{_datadir}/%{name}/modules
-%attr(-,inspircd,inspircd) %{_datadir}/%{name}/.gdbargs
 %config(noreplace) %attr(-,root,root) %{_sysconfdir}/logrotate.d/%{name}
 
 # All excludes
-# Removing their custom 'service' - At some point I will open a PR
-# to change their unit to be better supported under systemd
+# Removing some things
 %exclude %{_datadir}/%{name}/inspircd.service
-%exclude %dir %{_datadir}/man
+%exclude %{_datadir}/%{name}/logrotate
+%exclude %{_sbindir}/inspircd-genssl
+
 # Modules
-%exclude %{_libdir}/%{name}/modules/m_ssl_gnutls.so
-%exclude %{_libdir}/%{name}/modules/m_ssl_openssl.so
-%exclude %{_libdir}/%{name}/modules/m_sslrehashsignal.so
+%exclude %{_libdir}/%{name}/modules/m_ssl_*.so
 %exclude %{_libdir}/%{name}/modules/m_ldap*.so
-%exclude %{_libdir}/%{name}/modules/m_regex_*.so
 %exclude %{_libdir}/%{name}/modules/m_mysql.so
 %exclude %{_libdir}/%{name}/modules/m_pgsql.so
 %exclude %{_libdir}/%{name}/modules/m_sqlite3.so
-#%exclude %{_libdir}/%{name}/modules/m_geomaxmind.so
+%exclude %{_libdir}/%{name}/modules/m_geo_maxmind.so
 # Extras
 %exclude %{_libdir}/%{name}/modules/m_antirandom.so
+%exclude %{_libdir}/%{name}/modules/m_autoaway.so
 %exclude %{_libdir}/%{name}/modules/m_autodrop.so
 %exclude %{_libdir}/%{name}/modules/m_autokick.so
+%exclude %{_libdir}/%{name}/modules/m_bannegate.so
 %exclude %{_libdir}/%{name}/modules/m_blockhighlight.so
 %exclude %{_libdir}/%{name}/modules/m_blockinvite.so
 %exclude %{_libdir}/%{name}/modules/m_checkbans.so
+%exclude %{_libdir}/%{name}/modules/m_clientcheck.so
 %exclude %{_libdir}/%{name}/modules/m_close.so
+%exclude %{_libdir}/%{name}/modules/m_complete.so
 %exclude %{_libdir}/%{name}/modules/m_conn_accounts.so
 %exclude %{_libdir}/%{name}/modules/m_conn_banner.so
+%exclude %{_libdir}/%{name}/modules/m_conn_join_geoip.so
+%exclude %{_libdir}/%{name}/modules/m_conn_join_ident.so
 %exclude %{_libdir}/%{name}/modules/m_conn_matchident.so
 %exclude %{_libdir}/%{name}/modules/m_conn_require.so
 %exclude %{_libdir}/%{name}/modules/m_conn_strictsasl.so
 %exclude %{_libdir}/%{name}/modules/m_conn_vhost.so
 %exclude %{_libdir}/%{name}/modules/m_custompenalty.so
+%exclude %{_libdir}/%{name}/modules/m_customtags.so
+%exclude %{_libdir}/%{name}/modules/m_discordnick.so
+%exclude %{_libdir}/%{name}/modules/m_eventexec.so
 %exclude %{_libdir}/%{name}/modules/m_extbanbanlist.so
+%exclude %{_libdir}/%{name}/modules/m_extbanredirect.so
 %exclude %{_libdir}/%{name}/modules/m_extbanregex.so
+%exclude %{_libdir}/%{name}/modules/m_fakelist.so
 %exclude %{_libdir}/%{name}/modules/m_forceident.so
+%exclude %{_libdir}/%{name}/modules/m_geocmd.so
 %exclude %{_libdir}/%{name}/modules/m_globalmessageflood.so
-%exclude %{_libdir}/%{name}/modules/m_groups.so
 %exclude %{_libdir}/%{name}/modules/m_hideidle.so
 %exclude %{_libdir}/%{name}/modules/m_identmeta.so
 %exclude %{_libdir}/%{name}/modules/m_join0.so
@@ -525,119 +382,106 @@ fi
 %exclude %{_libdir}/%{name}/modules/m_kill_idle.so
 %exclude %{_libdir}/%{name}/modules/m_messagelength.so
 %exclude %{_libdir}/%{name}/modules/m_namedstats.so
+%exclude %{_libdir}/%{name}/modules/m_nickdelay.so
 %exclude %{_libdir}/%{name}/modules/m_nocreate.so
+%exclude %{_libdir}/%{name}/modules/m_noidletyping.so
 %exclude %{_libdir}/%{name}/modules/m_noprivatemode.so
+%exclude %{_libdir}/%{name}/modules/m_nouidnick.so
 %exclude %{_libdir}/%{name}/modules/m_opmoderated.so
 %exclude %{_libdir}/%{name}/modules/m_qrcode.so
 %exclude %{_libdir}/%{name}/modules/m_randomnotice.so
 %exclude %{_libdir}/%{name}/modules/m_require_auth.so
 %exclude %{_libdir}/%{name}/modules/m_restrictmsg_duration.so
 %exclude %{_libdir}/%{name}/modules/m_rotatelog.so
+%exclude %{_libdir}/%{name}/modules/m_samove.so
 %exclude %{_libdir}/%{name}/modules/m_shed_users.so
 %exclude %{_libdir}/%{name}/modules/m_slowmode.so
 %exclude %{_libdir}/%{name}/modules/m_solvemsg.so
 %exclude %{_libdir}/%{name}/modules/m_stats_unlinked.so
 %exclude %{_libdir}/%{name}/modules/m_svsoper.so
+%exclude %{_libdir}/%{name}/modules/m_tag_iphost.so
+%exclude %{_libdir}/%{name}/modules/m_teams.so
+%exclude %{_libdir}/%{name}/modules/m_telegraf.so
 %exclude %{_libdir}/%{name}/modules/m_timedstaticquit.so
 %exclude %{_libdir}/%{name}/modules/m_totp.so
 %exclude %{_libdir}/%{name}/modules/m_xlinetools.so
+%exclude %{_libdir}/%{name}/modules/m_zombie.so
 
-# OS Specific
-%if 0%{?fedora} || 0%{?rhel} >= 7
+# systemd
 %{_unitdir}/inspircd.service
-%else
-%{_initddir}/inspircd
-%{_var}/run/%{name}
-%endif
 
 # development headers
 %files devel
 %defattr (0644,root,root,0755)
 %dir %{_includedir}/%{name}
-%dir %{_includedir}/%{name}/commands
 %dir %{_includedir}/%{name}/modules
 %dir %{_includedir}/%{name}/threadengines
 %{_includedir}/%{name}/*.h
-%{_includedir}/%{name}/commands/*.h
 %{_includedir}/%{name}/modules/*.h
 %{_includedir}/%{name}/threadengines/*.h
 
 %files modules-openssl
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_ssl_openssl.so
-%{_libdir}/%{name}/modules/m_sslrehashsignal.so
 
 %files modules-gnutls
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_ssl_gnutls.so
 
-%if %{with ldap}
 %files modules-ldap
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_ldapauth.so
 %{_libdir}/%{name}/modules/m_ldapoper.so
-%endif
 
-%if %{with regex_engines}
-%files modules-pcre
-%defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_regex_pcre.so
-
-%files modules-posix
-%defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_regex_posix.so
-
-%files modules-tre
-%defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_regex_tre.so
-%endif
-
-%if %{with geomaxmind}
 %files modules-geomaxmind
 %defattr(-, root, root, -)
-%{_libdir}/%{name}/modules/m_geomaxmind.so
-%endif
+%{_libdir}/%{name}/modules/m_geo_maxmind.so
 
-%if %{with mysql}
 %files modules-mysql
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_mysql.so
-%endif
 
-%if %{with pgsql}
 %files modules-postgresql
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_pgsql.so
-%endif
 
-%if %{with sqlite}
 %files modules-sqlite3
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_sqlite3.so
-%endif
 
-%if %{with extras}
-%files extras
+%if %{with contrib}
+%files contrib
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_antirandom.so
+%{_libdir}/%{name}/modules/m_autoaway.so
 %{_libdir}/%{name}/modules/m_autodrop.so
 %{_libdir}/%{name}/modules/m_autokick.so
+%{_libdir}/%{name}/modules/m_bannegate.so
 %{_libdir}/%{name}/modules/m_blockhighlight.so
 %{_libdir}/%{name}/modules/m_blockinvite.so
 %{_libdir}/%{name}/modules/m_checkbans.so
+%{_libdir}/%{name}/modules/m_clientcheck.so
 %{_libdir}/%{name}/modules/m_close.so
+%{_libdir}/%{name}/modules/m_complete.so
 %{_libdir}/%{name}/modules/m_conn_accounts.so
 %{_libdir}/%{name}/modules/m_conn_banner.so
+%{_libdir}/%{name}/modules/m_conn_join_geoip.so
+%{_libdir}/%{name}/modules/m_conn_join_ident.so
 %{_libdir}/%{name}/modules/m_conn_matchident.so
 %{_libdir}/%{name}/modules/m_conn_require.so
 %{_libdir}/%{name}/modules/m_conn_strictsasl.so
 %{_libdir}/%{name}/modules/m_conn_vhost.so
 %{_libdir}/%{name}/modules/m_custompenalty.so
+%{_libdir}/%{name}/modules/m_customtags.so
+%{_libdir}/%{name}/modules/m_discordnick.so
+%{_libdir}/%{name}/modules/m_eventexec.so
 %{_libdir}/%{name}/modules/m_extbanbanlist.so
+%{_libdir}/%{name}/modules/m_extbanredirect.so
 %{_libdir}/%{name}/modules/m_extbanregex.so
+%{_libdir}/%{name}/modules/m_fakelist.so
 %{_libdir}/%{name}/modules/m_forceident.so
+%{_libdir}/%{name}/modules/m_geocmd.so
 %{_libdir}/%{name}/modules/m_globalmessageflood.so
-%{_libdir}/%{name}/modules/m_groups.so
 %{_libdir}/%{name}/modules/m_hideidle.so
 %{_libdir}/%{name}/modules/m_identmeta.so
 %{_libdir}/%{name}/modules/m_join0.so
@@ -647,25 +491,36 @@ fi
 %{_libdir}/%{name}/modules/m_kill_idle.so
 %{_libdir}/%{name}/modules/m_messagelength.so
 %{_libdir}/%{name}/modules/m_namedstats.so
+%{_libdir}/%{name}/modules/m_nickdelay.so
 %{_libdir}/%{name}/modules/m_nocreate.so
+%{_libdir}/%{name}/modules/m_noidletyping.so
 %{_libdir}/%{name}/modules/m_noprivatemode.so
+%{_libdir}/%{name}/modules/m_nouidnick.so
 %{_libdir}/%{name}/modules/m_opmoderated.so
 %{_libdir}/%{name}/modules/m_qrcode.so
 %{_libdir}/%{name}/modules/m_randomnotice.so
 %{_libdir}/%{name}/modules/m_require_auth.so
 %{_libdir}/%{name}/modules/m_restrictmsg_duration.so
 %{_libdir}/%{name}/modules/m_rotatelog.so
+%{_libdir}/%{name}/modules/m_samove.so
 %{_libdir}/%{name}/modules/m_shed_users.so
 %{_libdir}/%{name}/modules/m_slowmode.so
 %{_libdir}/%{name}/modules/m_solvemsg.so
 %{_libdir}/%{name}/modules/m_stats_unlinked.so
 %{_libdir}/%{name}/modules/m_svsoper.so
+%{_libdir}/%{name}/modules/m_tag_iphost.so
+%{_libdir}/%{name}/modules/m_teams.so
+%{_libdir}/%{name}/modules/m_telegraf.so
 %{_libdir}/%{name}/modules/m_timedstaticquit.so
 %{_libdir}/%{name}/modules/m_totp.so
 %{_libdir}/%{name}/modules/m_xlinetools.so
+%{_libdir}/%{name}/modules/m_zombie.so
 %endif
 
 %changelog
+* Fri Nov 13 2020 Louis Abel <tucklesepk@gmail.com - 3.8.0-1
+- Rebuilding to 3.8.0 by request
+
 * Wed Jun 05 2019 Louis Abel <tucklesepk@gmail.com> - 3.1.0-1
 - Update to 3.1.0
 - Added patches to revert changes that prevented the build
