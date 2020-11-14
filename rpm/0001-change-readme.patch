@@ -1,0 +1,18 @@
+--- inspircd-3.8.0-orig/make/template/help.txt	2020-10-30 05:01:10.000000000 -0700
++++ inspircd-3.8.0/make/template/help.txt	2020-11-13 22:38:48.773016850 -0700
+@@ -11,9 +11,12 @@
+ 
+ When you are done you can run the following command to start InspIRCd:
+ 
+-	@BINARY_DIR@/inspircd
++	systemctl enable inspircd.service --now
+ 
+ If you have installed from an official package you may need to prefix this
+-command with `sudo -g @GROUP@ -u @USER@` to run as the correct group/user.
++command with `sudo` if you are not the root user. Be sure to check the
++status of the service for errors:
++
++	systemctl status inspircd.service
++	journalctl -u inspircd.service
+ 
+-You can also use one of the helper scripts in `@SCRIPT_DIR@`.
