@@ -209,7 +209,7 @@ done
 
 %build
 # We're no longer supported :(
-./configure --enable-extras=m_mysql.cpp,m_pgsql.cpp,m_sqlite3.cpp,m_geo_maxmind.cpp,m_regex_pcre.cpp,m_regex_posix.cpp,m_regex_tre.cpp,m_regex_re2.cpp,m_regex_stdlib.cpp,m_ssl_openssl.cpp,m_sslrehashsignal.cpp,m_ssl_gnutls.cpp
+./configure --enable-extras=m_mysql.cpp,m_pgsql.cpp,m_sqlite3.cpp,m_geo_maxmind.cpp,m_regex_pcre.cpp,m_regex_posix.cpp,m_regex_tre.cpp,m_regex_stdlib.cpp,m_ssl_openssl.cpp,m_sslrehashsignal.cpp,m_ssl_gnutls.cpp
 
 ./configure --disable-interactive \
 	--disable-auto-extras \
