@@ -334,6 +334,8 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %exclude %{_datadir}/%{name}/inspircd.service
 %exclude %{_datadir}/%{name}/logrotate
 %exclude %{_sbindir}/inspircd-genssl
+# We don't use apparmor
+%exclude %{_datadir}/%{name}/apparmor
 
 # Modules
 %exclude %{_libdir}/%{name}/modules/m_ssl_*.so
