@@ -2,7 +2,7 @@
 %global _hardened_build 1
 %global major_version 3
 %global minor_version 8
-%global micro_version 0
+%global micro_version 1
 
 ## Define conditionals
 ## Change to "without" if needed
@@ -518,7 +518,11 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %endif
 
 %changelog
-* Fri Nov 13 2020 Louis Abel <tucklesepk@gmail.com - 3.8.0-1
+* Tue Nov 24 2020 Louis Abel <tucklesepk@gmail.com> - 3.8.1-1
+- Rebuilding to 3.8.1 by request
+- Fixed changelog
+
+* Fri Nov 13 2020 Louis Abel <tucklesepk@gmail.com> - 3.8.0-1
 - Rebuilding to 3.8.0 by request
 
 * Wed Jun 05 2019 Louis Abel <tucklesepk@gmail.com> - 3.1.0-1
