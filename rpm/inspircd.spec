@@ -224,6 +224,7 @@ done
 	--log-dir=%{_localstatedir}/log/%{name} \
 	--example-dir=%{_docdir}/%{name}-%{version}/examples \
 	--script-dir=%{_datadir}/%{name} \
+        --manual-dir=%{_mandir}/man1 \
 	--system \
 	--uid $(id -u) \
 	--gid $(id -g)
