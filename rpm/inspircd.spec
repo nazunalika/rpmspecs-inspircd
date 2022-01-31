@@ -223,6 +223,7 @@ done
 	--data-dir=%{_sharedstatedir}/%{name} \
 	--log-dir=%{_localstatedir}/log/%{name} \
 	--example-dir=%{_docdir}/%{name}-%{version}/examples \
+	--script-dir=%{_datadir}/%{name} \
 	--system \
 	--uid $(id -u) \
 	--gid $(id -g)
