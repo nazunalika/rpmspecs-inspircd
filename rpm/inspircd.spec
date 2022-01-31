@@ -1,7 +1,7 @@
 ## Define global settings
 %global _hardened_build 1
 %global major_version 3
-%global minor_version 9
+%global minor_version 12
 %global micro_version 0
 
 ## Define conditionals
@@ -36,6 +36,7 @@ BuildRequires:	perl(LWP::Protocol::https)
 #BuildRequires:	perl(Crypt::SSLeay)
 BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
+BuildRequires:  perl(FindBin)
 BuildRequires:	make
 BuildRequires:	gcc
 BuildRequires:	gcc-c++
@@ -455,12 +456,15 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %files contrib
 %defattr(-, root, root, -)
 %{_libdir}/%{name}/modules/m_antirandom.so
+%{_libdir}/%{name}/modules/m_asciiswitch.so
+%{_libdir}/%{name}/modules/m_asn.so
 %{_libdir}/%{name}/modules/m_autoaway.so
 %{_libdir}/%{name}/modules/m_autodrop.so
 %{_libdir}/%{name}/modules/m_autokick.so
 %{_libdir}/%{name}/modules/m_bannegate.so
 %{_libdir}/%{name}/modules/m_blockhighlight.so
 %{_libdir}/%{name}/modules/m_blockinvite.so
+%{_libdir}/%{name}/modules/m_changecap.so
 %{_libdir}/%{name}/modules/m_checkbans.so
 %{_libdir}/%{name}/modules/m_clientcheck.so
 %{_libdir}/%{name}/modules/m_close.so
@@ -475,8 +479,11 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %{_libdir}/%{name}/modules/m_conn_vhost.so
 %{_libdir}/%{name}/modules/m_custompenalty.so
 %{_libdir}/%{name}/modules/m_customtags.so
+%{_libdir}/%{name}/modules/m_dccblock.so
+%{_libdir}/%{name}/modules/m_defaulttopic.so
 %{_libdir}/%{name}/modules/m_discordnick.so
 %{_libdir}/%{name}/modules/m_eventexec.so
+%{_libdir}/%{name}/modules/m_exmode.so
 %{_libdir}/%{name}/modules/m_extbanbanlist.so
 %{_libdir}/%{name}/modules/m_extbanredirect.so
 %{_libdir}/%{name}/modules/m_extbanregex.so
@@ -484,6 +491,7 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %{_libdir}/%{name}/modules/m_forceident.so
 %{_libdir}/%{name}/modules/m_geocmd.so
 %{_libdir}/%{name}/modules/m_globalmessageflood.so
+%{_libdir}/%{name}/modules/m_hash_gnutls.so
 %{_libdir}/%{name}/modules/m_hideidle.so
 %{_libdir}/%{name}/modules/m_identmeta.so
 %{_libdir}/%{name}/modules/m_join0.so
@@ -499,12 +507,17 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %{_libdir}/%{name}/modules/m_noprivatemode.so
 %{_libdir}/%{name}/modules/m_nouidnick.so
 %{_libdir}/%{name}/modules/m_opmoderated.so
+%{_libdir}/%{name}/modules/m_owoifier.so
 %{_libdir}/%{name}/modules/m_qrcode.so
 %{_libdir}/%{name}/modules/m_randomnotice.so
+%{_libdir}/%{name}/modules/m_regex_pcre2.so
+%{_libdir}/%{name}/modules/m_relaymsg.so
 %{_libdir}/%{name}/modules/m_require_auth.so
 %{_libdir}/%{name}/modules/m_restrictmsg_duration.so
+%{_libdir}/%{name}/modules/m_roleplay.so
 %{_libdir}/%{name}/modules/m_rotatelog.so
 %{_libdir}/%{name}/modules/m_samove.so
+%{_libdir}/%{name}/modules/m_sha512.so
 %{_libdir}/%{name}/modules/m_shed_users.so
 %{_libdir}/%{name}/modules/m_slowmode.so
 %{_libdir}/%{name}/modules/m_solvemsg.so
@@ -512,7 +525,9 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %{_libdir}/%{name}/modules/m_svsoper.so
 %{_libdir}/%{name}/modules/m_tag_iphost.so
 %{_libdir}/%{name}/modules/m_teams.so
+%{_libdir}/%{name}/modules/m_teststdrpl.so
 %{_libdir}/%{name}/modules/m_telegraf.so
+%{_libdir}/%{name}/modules/m_tgchange.so
 %{_libdir}/%{name}/modules/m_timedstaticquit.so
 %{_libdir}/%{name}/modules/m_totp.so
 %{_libdir}/%{name}/modules/m_xlinetools.so
@@ -520,8 +535,12 @@ rm -f %{buildroot}%{_datadir}/%{name}/.gdbargs
 %endif
 
 %changelog
+* Sun Jan 30 2022 Louis Abel <tucklesepk@gmail.com> - 3.12.0-1
+- Rebuilding to 3.12.0 to coincide with atheme update
+- Fixing errors in changelog
+
 * Tue Mar 16 2021 Louis Abel <tucklesepk@gmail.com> - 3.9.0-1
-* Rebuilding  to 3.9.0 by request
+- Rebuilding to 3.9.0 by request
 
 * Tue Nov 24 2020 Louis Abel <tucklesepk@gmail.com> - 3.8.1-1
 - Rebuilding to 3.8.1 by request
