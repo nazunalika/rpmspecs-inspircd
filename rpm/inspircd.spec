@@ -37,6 +37,7 @@ BuildRequires:	perl(LWP::Protocol::https)
 BuildRequires:	perl(IO::Socket::SSL)
 BuildRequires:	perl(Getopt::Long)
 BuildRequires:  perl(FindBin)
+BuildRequires:  pcre2-devel
 BuildRequires:	make
 BuildRequires:	gcc
 BuildRequires:	gcc-c++
